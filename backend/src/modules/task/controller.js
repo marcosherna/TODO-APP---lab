@@ -1,20 +1,38 @@
+const {
+  getAllTask,
+  getByTaskId,
+  storeTask,
+  updateTask,
+  deleteTask,
+} = require("./service");
+
 const getById = async (req, res) => {
-  res.status(200).json({ message: "get by id method" });
+  const { id: taskI } = req.params;
+  const task = await getByTaskId(taskI);
+  res.status(200).json(task);
 };
 
 const getAll = async (req, res) => {
-  res.status(200).json({ message: "get method" });
+  const tasks = await getAllTask();
+  res.status(200).json(tasks);
 };
 
 const create = async (req, res) => {
-  res.status(201).json({ message: "post method" });
+  const { title, description } = req.body;
+  const task = await storeTask({ title, description });
+  res.status(201).json(task);
 };
 
 const update = async (req, res) => {
-  res.status(200).json({ message: "put method" });
+  const { id: taskId } = req.params;
+  const { title, description, completed } = req.body;
+  const task = await updateTask(taskId, { title, description, completed });
+  res.status(200).json(task);
 };
 
 const trash = async (req, res) => {
+  const { id: taskId } = req.params;
+  await deleteTask(taskId);
   res.status(204).end();
 };
 
