@@ -33,3 +33,8 @@ exports.delete = async (taskId) => {
     },
   });
 };
+
+exports.exists = async (taskId) => {
+  const count = await Task.count({ where: { id: taskId } });
+  return count > 0;
+};
