@@ -10,6 +10,15 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
     }
+
+    toJSON() {
+      const values = { ...this.get() };
+      values.created_at = values.createdAt;
+      values.updated_at = values.updatedAt;
+      delete values.createdAt;
+      delete values.updatedAt;
+      return values;
+    }
   }
   Task.init(
     {

@@ -3,18 +3,19 @@ const taskService = require("./service");
 exports.getById = async (req, res) => {
   const { id: taskI } = req.params;
   const task = await taskService.getById(taskI);
-  res.status(200).json(task);
+  res.status(200).json(task.toJSON());
 };
 
 exports.getAll = async (req, res) => {
-  const tasks = await taskService.getAll();
+  let tasks = await taskService.getAll();
+  tasks.map((task) => task.toJSON());
   res.status(200).json(tasks);
 };
 
 exports.create = async (req, res) => {
   const { title, description } = req.body;
   const task = await taskService.store({ title, description });
-  res.status(201).json(task);
+  res.status(201).json(task.toJSON());
 };
 
 exports.update = async (req, res) => {
@@ -25,7 +26,7 @@ exports.update = async (req, res) => {
     description,
     completed,
   });
-  res.status(200).json(task);
+  res.status(200).json(task.toJSON());
 };
 
 exports.delete = async (req, res) => {
