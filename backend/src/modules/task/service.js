@@ -16,13 +16,9 @@ const storeTask = async (taskData) => {
 };
 
 const updateTask = async (taskId, taskData) => {
-  // TODO : implement method whit repository task
-  return {
-    id: taskId,
-    ...taskData,
-    created_at: new Date().toLocaleString(),
-    updated_at: new Date().toLocaleString(),
-  };
+  await taskRepository.update(taskId, taskData);
+  const task = await taskRepository.findById(taskId);
+  return task;
 };
 
 const deleteTask = async (taskId) => {

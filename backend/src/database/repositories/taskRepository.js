@@ -14,3 +14,14 @@ exports.create = async (taskData) => {
   const task = await Task.create(taskData);
   return task;
 };
+
+exports.update = async (taskId, taskData) => {
+  await Task.update(
+    { ...taskData },
+    {
+      where: {
+        id: taskId,
+      },
+    }
+  );
+};
