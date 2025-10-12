@@ -1,3 +1,3 @@
-const { Init } = require("./src/startUp");
+const { Init } = require("./src/startUp"); 
 
 Init().catch((reason) => console.error(reason));
