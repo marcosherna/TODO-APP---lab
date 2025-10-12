@@ -1,13 +1,13 @@
 const { Router } = require("express");
-const { getById, getAll, create, update, trash } = require("./controller");
+const taskController = require("./controller");
 
 const PATH = "/task";
 const router = Router();
 
-router.get(`${PATH}/:id`, getById);
-router.get(`${PATH}/`, getAll);
-router.post(`${PATH}/`, create);
-router.put(`${PATH}/:id`, update);
-router.delete(`${PATH}/:id`, trash);
+router.get(`${PATH}/:id`, taskController.getById);
+router.get(`${PATH}/`, taskController.getAll);
+router.post(`${PATH}/`, taskController.create);
+router.put(`${PATH}/:id`, taskController.update);
+router.delete(`${PATH}/:id`, taskController.delete);
 
 module.exports = { router };
