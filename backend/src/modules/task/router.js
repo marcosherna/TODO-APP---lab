@@ -2,6 +2,7 @@ const { Router } = require("express");
 
 const taskController = require("./controller");
 const { validateRequest } = require("../../middlewares/validateRequest");
+const asyncHandler = require("../../handlers/asyncHandler");
 const taskRequest = require("./request");
 
 const PATH = "/task";
@@ -11,26 +12,26 @@ router.get(
   `${PATH}/:id`,
   taskRequest.idValidator,
   validateRequest,
-  taskController.getById
+  asyncHandler(taskController.getById)
 );
-router.get(`${PATH}/`, taskController.getAll);
+router.get(`${PATH}/`, asyncHandler(taskController.getAll));
 router.post(
   `${PATH}/`,
   taskRequest.createValidator,
   validateRequest,
-  taskController.create
+  asyncHandler(taskController.create)
 );
 router.put(
   `${PATH}/:id`,
   taskRequest.updateValidator,
   validateRequest,
-  taskController.update
+  asyncHandler(taskController.update)
 );
 router.delete(
   `${PATH}/:id`,
   taskRequest.idValidator,
   validateRequest,
-  taskController.delete
+  asyncHandler(taskController.delete)
 );
 
 module.exports = { router };
