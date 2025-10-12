@@ -22,8 +22,7 @@ const updateTask = async (taskId, taskData) => {
 };
 
 const deleteTask = async (taskId) => {
-  // TODO : implement method whit repository task
-  return;
+  await taskRepository.delete(taskId);
 };
 
 module.exports = {

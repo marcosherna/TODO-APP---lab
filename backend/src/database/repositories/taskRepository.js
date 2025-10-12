@@ -25,3 +25,11 @@ exports.update = async (taskId, taskData) => {
     }
   );
 };
+
+exports.delete = async (taskId) => {
+  await Task.destroy({
+    where: {
+      id: taskId,
+    },
+  });
+};
