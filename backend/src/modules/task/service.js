@@ -13,17 +13,8 @@ const getByTaskId = async (taskId) => {
 };
 
 const getAllTask = async () => {
-  // TODO : implement method whit repository task
-  return [
-    {
-      id: 1,
-      title: "this is test title for task",
-      description: "this is a description for task",
-      completed: false,
-      created_at: new Date().toLocaleDateString(),
-      updated_at: new Date().toLocaleDateString(),
-    },
-  ];
+  const task = await taskRepository.findAll();
+  return task;
 };
 
 const storeTask = async (taskData) => {
