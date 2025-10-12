@@ -1,3 +1,5 @@
+const taskRepository = require("../../database/repositories/taskRepository");
+
 const getByTaskId = async (taskId) => {
   // TODO : implement method whit repository task
   return {
@@ -25,13 +27,8 @@ const getAllTask = async () => {
 };
 
 const storeTask = async (taskData) => {
-  // TODO : implement method whit repository task
-  return {
-    id: 2,
-    ...taskData,
-    completed: false,
-    created_at: new Date().toLocaleString(),
-  };
+  const task = await taskRepository.create(taskData);
+  return task;
 };
 
 const updateTask = async (taskId, taskData) => {
