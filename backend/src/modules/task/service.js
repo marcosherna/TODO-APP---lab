@@ -1,15 +1,8 @@
 const taskRepository = require("../../database/repositories/taskRepository");
 
 const getByTaskId = async (taskId) => {
-  // TODO : implement method whit repository task
-  return {
-    id: 1,
-    title: "this is test title for task",
-    description: "this is a description for task",
-    completed: false,
-    created_at: new Date().toLocaleDateString(),
-    updated_at: new Date().toLocaleDateString(),
-  };
+  const task = await taskRepository.findById(taskId);
+  return task;
 };
 
 const getAllTask = async () => {

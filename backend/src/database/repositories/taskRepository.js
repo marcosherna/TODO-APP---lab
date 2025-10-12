@@ -1,5 +1,10 @@
 const { Task } = require("../models");
 
+exports.findById = async (TaskId) => {
+  const task = await Task.findByPk(TaskId);
+  return task;
+};
+
 exports.findAll = async () => {
   const tasks = await Task.findAll();
   return tasks;
