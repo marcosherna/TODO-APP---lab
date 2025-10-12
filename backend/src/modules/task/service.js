@@ -1,34 +1,26 @@
 const taskRepository = require("../../database/repositories/taskRepository");
 
-const getByTaskId = async (taskId) => {
+exports.getById = async (taskId) => {
   const task = await taskRepository.findById(taskId);
   return task;
 };
 
-const getAllTask = async () => {
+exports.getAll = async () => {
   const task = await taskRepository.findAll();
   return task;
 };
 
-const storeTask = async (taskData) => {
+exports.store = async (taskData) => {
   const task = await taskRepository.create(taskData);
   return task;
 };
 
-const updateTask = async (taskId, taskData) => {
+exports.update = async (taskId, taskData) => {
   await taskRepository.update(taskId, taskData);
   const task = await taskRepository.findById(taskId);
   return task;
 };
 
-const deleteTask = async (taskId) => {
+exports.delete = async (taskId) => {
   await taskRepository.delete(taskId);
-};
-
-module.exports = {
-  getByTaskId,
-  getAllTask,
-  storeTask,
-  updateTask,
-  deleteTask,
 };
