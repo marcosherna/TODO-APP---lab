@@ -10,6 +10,7 @@
     <!-- #endregion -->
 
     <!-- alpine-js -->
+    <script src="./api.js"></script>
     <script
       defer
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
@@ -46,18 +47,11 @@
           async getAllTask() {
             try {
               this.loading = true;
-              await new Promise((resolve) => setTimeout(resolve, 2000));
 
-              //TODO : fecth data from api
-              this.tasks = Array.from({ length: 10 }, (_, i) => ({
-                id: i + 1,
-                title: `Example title ${i + 1}`,
-                description:
-                  "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Animi, pariatur deserunt maiores odit aliquid exercitationem perferendis assumenda delectus omnis similique explicabo molestias minus, earum molestiae id! Voluptatum unde optio harum!",
-                completed: i % 2 === 0,
-                created_at: new Date().toLocaleDateString(),
-                updated_at: new Date().toLocaleDateString(),
-              }));
+              const taskData = await getTasks();
+              console.log(taskData);
+
+              this.tasks = taskData;
 
               this.isEmpty = this.tasks.length === 0;
             } catch (error) {
@@ -69,25 +63,27 @@
           async postSubmit() {
             try {
               this.postFormLoading = true;
-              // TODO: implemented method
-              await new Promise((resolve) => setTimeout(resolve, 2000));
 
               if (this.isUpdating && this.id !== 0) {
-                console.log({
-                  id: this.id,
+                const indexTask = this.tasks.findIndex((t) => t.id === this.id);
+                const task = await updateTask(this.id, {
                   title: this.title,
                   description: this.description,
                   completed: this.completed,
                 });
+
+                this.tasks[indexTask] = task;
               } else {
-                console.log({
+                const task = await createTask({
                   title: this.title,
                   description: this.description,
                 });
+
+                this.tasks.push(task);
               }
               this.postFormLoading = false;
               this.handleCloseFormDrawer();
-              await this.getAllTask();
+              // await this.getAllTask();
             } catch (error) {
               console.log(error);
             } finally {
