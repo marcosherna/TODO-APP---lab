@@ -48,6 +48,33 @@
               this.loading = false;
             }
           },
+
+          title: "",
+          description: "",
+          completed: false,
+          postFormLoading: false,
+          async postSubmit() {
+            try {
+              this.postFormLoading = true;
+              // TODO: implemented method
+              await new Promise((resolve) => setTimeout(resolve, 2000));
+              const task = {
+                title: this.title,
+                description: this.description,
+              };
+              console.log(task);
+              this.postFormLoading = false;
+              this.title = "";
+              this.description = "";
+              this.handleShowFormDrawer();
+
+              await this.getAllTask();
+            } catch (error) {
+              console.log(error);
+            } finally {
+              this.postFormLoading = false;
+            }
+          },
         }));
       });
     </script>
@@ -228,60 +255,61 @@
         <!-- list -->
         <div
           x-init="getAllTask()"
-          x-if="!loading && !isEmpty"
           class="h-full p-5 pr-2 overflow-auto space-y-2"
         >
-          <template x-for="(task, index) in tasks" :key="task.id">
-            <!-- #region task card -->
-            <div
-              class="bg-gray-100 p-3 rounded-lg space-y-2 hover:cursor-pointer hover:shadow-md"
-              x-bind:class="index == (tasks.length -1) ? `mb-14`: ``"
-            >
-              <span class="flex justify-between items-center">
-                <h3
-                  x-text="task.title"
-                  class="text-md font-medium text-gray-700"
-                >
-                  title placeholder
-                </h3>
-                <span
-                  class="p-1 hover:rounded-md hover:bg-gray-200 active:bg-gray-200 active:rounded-md"
-                >
-                  <i
-                    data-lucide="chevron-right"
-                    class="text-gray-600 h-[20px] w-[20px]"
-                  ></i>
-                </span>
-              </span>
-              <p
-                x-text="task.description"
-                class="text-sm text-gray-500 line-clamp-2"
+          <template x-if="!loading && !isEmpty">
+            <template x-for="(task, index) in tasks" :key="task.id">
+              <!-- #region task card -->
+              <div
+                class="bg-gray-100 p-3 rounded-lg space-y-2 hover:cursor-pointer hover:shadow-md"
+                x-bind:class="index == (tasks.length -1) ? `mb-14`: ``"
               >
-                description placeholder
-              </p>
-              <div class="flex flex-row space-x-3 items-center">
-                <span class="flex space-x-1 items-center">
-                  <span class="p-1">
+                <span class="flex justify-between items-center">
+                  <h3
+                    x-text="task.title"
+                    class="text-md font-medium text-gray-700"
+                  >
+                    title placeholder
+                  </h3>
+                  <span
+                    class="p-1 hover:rounded-md hover:bg-gray-200 active:bg-gray-200 active:rounded-md"
+                  >
                     <i
-                      data-lucide="calendar-clock"
+                      data-lucide="chevron-right"
                       class="text-gray-600 h-[20px] w-[20px]"
                     ></i>
                   </span>
-                  <span x-text="task.created_at" class="text-gray-600 text-sm"
-                    >23 oct 2025</span
-                  >
                 </span>
-
-                <span
-                  x-text="task.completed ? `Completada` : `Pendiente`"
-                  class="text-sm px-2 py-1 rounded-lg"
-                  x-bind:class="task.completed ? `border-blue-500 text-blue-500 bg-blue-100` : `border-orange-500 text-orange-500 bg-orange-100`"
+                <p
+                  x-text="task.description"
+                  class="text-sm text-gray-500 line-clamp-2"
                 >
-                  placeholder
-                </span>
+                  description placeholder
+                </p>
+                <div class="flex flex-row space-x-3 items-center">
+                  <span class="flex space-x-1 items-center">
+                    <span class="p-1">
+                      <i
+                        data-lucide="calendar-clock"
+                        class="text-gray-600 h-[20px] w-[20px]"
+                      ></i>
+                    </span>
+                    <span x-text="task.created_at" class="text-gray-600 text-sm"
+                      >23 oct 2025</span
+                    >
+                  </span>
+
+                  <span
+                    x-text="task.completed ? `Completada` : `Pendiente`"
+                    class="text-sm px-2 py-1 rounded-lg"
+                    x-bind:class="task.completed ? `border-blue-500 text-blue-500 bg-blue-100` : `border-orange-500 text-orange-500 bg-orange-100`"
+                  >
+                    placeholder
+                  </span>
+                </div>
               </div>
-            </div>
-            <!-- #endregion -->
+              <!-- #endregion -->
+            </template>
           </template>
 
           <!-- overlay (invisible al inicio) -->
@@ -314,24 +342,136 @@
             </button>
           </div>
 
-          <form class="space-y-3">
+          <form x-on:submit.prevent="postSubmit()" class="space-y-3">
             <input
+              x-model="title"
+              x-bind:disabled="postFormLoading"
               type="text"
               placeholder="Title..."
               required
               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
             <textarea
+              x-model="description"
+              x-bind:disabled="postFormLoading"
               placeholder="Description..."
               rows="3"
               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
             ></textarea>
 
             <button
+              x-bind:disabled="postFormLoading"
               type="submit"
               class="bg-blue-200 hover:bg-blue-300 active:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 text-blue-700 px-3 py-1 rounded-lg text-sm items-center flex gap-1"
             >
-              <span> Save </span>
+              <template x-if="postFormLoading">
+                <span class="text-blue-700"
+                  ><svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="15"
+                    height="15"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <rect x="1" y="6" width="2.8" height="12">
+                      <animate
+                        id="spinner_a"
+                        begin="0;spinner_e.end-0.1s"
+                        attributeName="y"
+                        dur="0.6s"
+                        values="6;1;6"
+                        calcMode="spline"
+                        keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                      />
+                      <animate
+                        begin="0;spinner_e.end-0.1s"
+                        attributeName="height"
+                        dur="0.6s"
+                        values="12;22;12"
+                        calcMode="spline"
+                        keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                      />
+                    </rect>
+                    <rect x="5.8" y="6" width="2.8" height="12">
+                      <animate
+                        begin="spinner_a.begin+0.1s"
+                        attributeName="y"
+                        dur="0.6s"
+                        values="6;1;6"
+                        calcMode="spline"
+                        keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                      />
+                      <animate
+                        begin="spinner_a.begin+0.1s"
+                        attributeName="height"
+                        dur="0.6s"
+                        values="12;22;12"
+                        calcMode="spline"
+                        keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                      />
+                    </rect>
+                    <rect x="10.6" y="6" width="2.8" height="12">
+                      <animate
+                        begin="spinner_a.begin+0.2s"
+                        attributeName="y"
+                        dur="0.6s"
+                        values="6;1;6"
+                        calcMode="spline"
+                        keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                      />
+                      <animate
+                        begin="spinner_a.begin+0.2s"
+                        attributeName="height"
+                        dur="0.6s"
+                        values="12;22;12"
+                        calcMode="spline"
+                        keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                      />
+                    </rect>
+                    <rect x="15.4" y="6" width="2.8" height="12">
+                      <animate
+                        begin="spinner_a.begin+0.3s"
+                        attributeName="y"
+                        dur="0.6s"
+                        values="6;1;6"
+                        calcMode="spline"
+                        keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                      />
+                      <animate
+                        begin="spinner_a.begin+0.3s"
+                        attributeName="height"
+                        dur="0.6s"
+                        values="12;22;12"
+                        calcMode="spline"
+                        keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                      />
+                    </rect>
+                    <rect x="20.2" y="6" width="2.8" height="12">
+                      <animate
+                        id="spinner_e"
+                        begin="spinner_a.begin+0.4s"
+                        attributeName="y"
+                        dur="0.6s"
+                        values="6;1;6"
+                        calcMode="spline"
+                        keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                      />
+                      <animate
+                        begin="spinner_a.begin+0.4s"
+                        attributeName="height"
+                        dur="0.6s"
+                        values="12;22;12"
+                        calcMode="spline"
+                        keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                      />
+                    </rect></svg
+                ></span>
+              </template>
+
+              <span x-text="postFormLoading ? `Loading...` : `Save`">
+                Save
+              </span>
             </button>
           </form>
         </div>
