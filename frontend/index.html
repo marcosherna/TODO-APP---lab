@@ -15,6 +15,43 @@
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
     ></script>
 
+    <script>
+      document.addEventListener("alpine:init", () => {
+        Alpine.data("mainTask", () => ({
+          showFormDrawer: false,
+          handleShowFormDrawer() {
+            this.showFormDrawer = !this.showFormDrawer;
+          },
+
+          loading: false,
+          isEmpty: true,
+          tasks: [],
+          async getAllTask() {
+            try {
+              this.loading = true;
+              await new Promise((resolve) => setTimeout(resolve, 2000));
+
+              //TODO : fecth data from api
+              this.tasks = Array.from({ length: 10 }, (_, i) => ({
+                id: i + 1,
+                title: `Example title ${i + 1}`,
+                description:
+                  "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Animi, pariatur deserunt maiores odit aliquid exercitationem perferendis assumenda delectus omnis similique explicabo molestias minus, earum molestiae id! Voluptatum unde optio harum!",
+                completed: i % 2 === 0,
+                created_at: new Date().toLocaleDateString(),
+                updated_at: new Date().toLocaleDateString(),
+              }));
+
+              this.isEmpty = this.tasks.length === 0;
+            } catch (error) {
+            } finally {
+              this.loading = false;
+            }
+          },
+        }));
+      });
+    </script>
+
     <title>TODO APP</title>
   </head>
   <body
@@ -28,17 +65,17 @@
       class="flex justify-center items-center h-screen w-full md:w-1/2 p-4 md:px-10 bg-gray-200"
     >
       <div
-        x-data="{ showDrawer: false }"
+        x-data="mainTask"
         class="relative h-full w-full md:w-[325px] md:rounded-2xl shadow-lg bg-white overflow-hidden"
       >
         <!-- #region header -->
-        <div class="flex items-end justify-between px-5 mt-5">
+        <div class="flex items-end justify-between px-5 mt-5 mb-2">
           <span>
             <h2 class="font-medium text-xl">Today's Task</h2>
             <span class="text-sm text-gray-500">Wednesday, 11 may</span>
           </span>
           <button
-            x-on:click="showDrawer = !showDrawer"
+            x-on:click="handleShowFormDrawer()"
             class="bg-blue-200 hover:bg-blue-300 active:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 text-blue-700 px-3 py-1 rounded-lg text-sm items-center flex gap-1"
           >
             <span>+</span>
@@ -47,58 +84,217 @@
         </div>
         <!-- #endregion -->
 
-        <!-- list -->
-        <div class="h-full p-5 pr-2 overflow-auto space-y-2">
-          <!-- #region task card -->
-          <div
-            class="bg-gray-100 p-3 rounded-lg space-y-2 hover:cursor-pointer hover:shadow-md"
+        <template x-if="loading">
+          <!-- #region spinner loading -->
+          <span
+            class="flex flex-col justify-center items-center text-blue-500 mt-7"
           >
-            <span class="flex justify-between items-center">
-              <h3 class="text-md font-medium text-gray-700">
-                title placeholder
-              </h3>
-              <span
-                class="p-1 hover:rounded-md hover:bg-gray-200 active:bg-gray-200 active:rounded-md"
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="24"
+              height="24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <rect x="1" y="6" width="2.8" height="12">
+                <animate
+                  id="spinner_a"
+                  begin="0;spinner_e.end-0.1s"
+                  attributeName="y"
+                  dur="0.6s"
+                  values="6;1;6"
+                  calcMode="spline"
+                  keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                />
+                <animate
+                  begin="0;spinner_e.end-0.1s"
+                  attributeName="height"
+                  dur="0.6s"
+                  values="12;22;12"
+                  calcMode="spline"
+                  keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                />
+              </rect>
+              <rect x="5.8" y="6" width="2.8" height="12">
+                <animate
+                  begin="spinner_a.begin+0.1s"
+                  attributeName="y"
+                  dur="0.6s"
+                  values="6;1;6"
+                  calcMode="spline"
+                  keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                />
+                <animate
+                  begin="spinner_a.begin+0.1s"
+                  attributeName="height"
+                  dur="0.6s"
+                  values="12;22;12"
+                  calcMode="spline"
+                  keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                />
+              </rect>
+              <rect x="10.6" y="6" width="2.8" height="12">
+                <animate
+                  begin="spinner_a.begin+0.2s"
+                  attributeName="y"
+                  dur="0.6s"
+                  values="6;1;6"
+                  calcMode="spline"
+                  keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                />
+                <animate
+                  begin="spinner_a.begin+0.2s"
+                  attributeName="height"
+                  dur="0.6s"
+                  values="12;22;12"
+                  calcMode="spline"
+                  keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                />
+              </rect>
+              <rect x="15.4" y="6" width="2.8" height="12">
+                <animate
+                  begin="spinner_a.begin+0.3s"
+                  attributeName="y"
+                  dur="0.6s"
+                  values="6;1;6"
+                  calcMode="spline"
+                  keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                />
+                <animate
+                  begin="spinner_a.begin+0.3s"
+                  attributeName="height"
+                  dur="0.6s"
+                  values="12;22;12"
+                  calcMode="spline"
+                  keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                />
+              </rect>
+              <rect x="20.2" y="6" width="2.8" height="12">
+                <animate
+                  id="spinner_e"
+                  begin="spinner_a.begin+0.4s"
+                  attributeName="y"
+                  dur="0.6s"
+                  values="6;1;6"
+                  calcMode="spline"
+                  keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                />
+                <animate
+                  begin="spinner_a.begin+0.4s"
+                  attributeName="height"
+                  dur="0.6s"
+                  values="12;22;12"
+                  calcMode="spline"
+                  keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                />
+              </rect>
+            </svg>
+
+            <span class="text-sm">Cargando...</span>
+          </span>
+          <!-- #endregion -->
+        </template>
+
+        <template x-if="!loading && isEmpty">
+          <div class="flex flex-col w-full max-w-sm px-4 mx-auto mt-7">
+            <div class="p-3 mx-auto text-blue-500 bg-blue-100 rounded-full">
+              <!-- TODO: change icon -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-6 h-6"
               >
-                <i
-                  data-lucide="chevron-right"
-                  class="text-gray-600 h-[20px] w-[20px]"
-                ></i>
-              </span>
-            </span>
-            <p class="text-sm text-gray-500 line-clamp-2">
-              description placeholder
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                />
+              </svg>
+            </div>
+            <h1 class="text-center text-lg text-gray-700">
+              You don't have Task
+            </h1>
+            <p class="text-center mt-2 text-gray-500 dark:text-gray-400">
+              Your search “Stripe” did not match any vendors. Please try again
+              or create add a new vendor.
             </p>
-            <div class="flex flex-row space-x-3 items-center">
-              <span class="flex space-x-1 items-center">
-                <span class="p-1">
+          </div>
+        </template>
+
+        <!-- list -->
+        <div
+          x-init="getAllTask()"
+          x-if="!loading && !isEmpty"
+          class="h-full p-5 pr-2 overflow-auto space-y-2"
+        >
+          <template x-for="(task, index) in tasks" :key="task.id">
+            <!-- #region task card -->
+            <div
+              class="bg-gray-100 p-3 rounded-lg space-y-2 hover:cursor-pointer hover:shadow-md"
+              x-bind:class="index == (tasks.length -1) ? `mb-14`: ``"
+            >
+              <span class="flex justify-between items-center">
+                <h3
+                  x-text="task.title"
+                  class="text-md font-medium text-gray-700"
+                >
+                  title placeholder
+                </h3>
+                <span
+                  class="p-1 hover:rounded-md hover:bg-gray-200 active:bg-gray-200 active:rounded-md"
+                >
                   <i
-                    data-lucide="calendar-clock"
+                    data-lucide="chevron-right"
                     class="text-gray-600 h-[20px] w-[20px]"
                   ></i>
                 </span>
-                <span class="text-gray-600 text-sm">23 oct 2025</span>
               </span>
-
-              <span
-                class="text-sm px-2 py-1 rounded-lg border-blue-500 text-blue-500 bg-blue-100"
+              <p
+                x-text="task.description"
+                class="text-sm text-gray-500 line-clamp-2"
               >
-                Pendiente
-              </span>
+                description placeholder
+              </p>
+              <div class="flex flex-row space-x-3 items-center">
+                <span class="flex space-x-1 items-center">
+                  <span class="p-1">
+                    <i
+                      data-lucide="calendar-clock"
+                      class="text-gray-600 h-[20px] w-[20px]"
+                    ></i>
+                  </span>
+                  <span x-text="task.created_at" class="text-gray-600 text-sm"
+                    >23 oct 2025</span
+                  >
+                </span>
+
+                <span
+                  x-text="task.completed ? `Completada` : `Pendiente`"
+                  class="text-sm px-2 py-1 rounded-lg"
+                  x-bind:class="task.completed ? `border-blue-500 text-blue-500 bg-blue-100` : `border-orange-500 text-orange-500 bg-orange-100`"
+                >
+                  placeholder
+                </span>
+              </div>
             </div>
-          </div>
-          <!-- #endregion -->
+            <!-- #endregion -->
+          </template>
+
           <!-- overlay (invisible al inicio) -->
           <div
-            x-show="showDrawer"
+            x-show="showFormDrawer"
             x-transition.opacity
-            x-on:click="showDrawer = false"
+            x-on:click="handleShowFormDrawer()"
             class="absolute inset-0 bg-black/30 transition-opacity duration-300"
           ></div>
         </div>
 
         <div
-          x-show="showDrawer"
+          x-show="showFormDrawer"
           x-transition:enter="transition transform duration-300"
           x-transition:enter-start="translate-y-full"
           x-transition:enter-end="translate-y-0"
@@ -111,7 +307,7 @@
             <h3 class="text-lg font-medium text-gray-800">New Task</h3>
 
             <button
-              x-on:click="showDrawer = !showDrawer"
+              x-on:click="handleShowFormDrawer()"
               class="hover:bg-gray-300 active:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400 text-gray-700 px-3 py-1 rounded-lg text-sm items-center flex gap-1"
             >
               x
