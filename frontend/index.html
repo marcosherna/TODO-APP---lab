@@ -19,8 +19,25 @@
       document.addEventListener("alpine:init", () => {
         Alpine.data("mainTask", () => ({
           showFormDrawer: false,
-          handleShowFormDrawer() {
-            this.showFormDrawer = !this.showFormDrawer;
+
+          id: 0,
+          title: "",
+          description: "",
+          completed: false,
+          postFormLoading: false,
+          isUpdating: false,
+
+          handleCloseFormDrawer() {
+            this.id = 0;
+            this.title = "";
+            this.description = "";
+            this.completed = false;
+            this.isUpdating = false;
+            this.showFormDrawer = false;
+          },
+
+          handleOpenFormDrawer() {
+            this.showFormDrawer = true;
           },
 
           loading: false,
@@ -49,31 +66,43 @@
             }
           },
 
-          title: "",
-          description: "",
-          completed: false,
-          postFormLoading: false,
           async postSubmit() {
             try {
               this.postFormLoading = true;
               // TODO: implemented method
               await new Promise((resolve) => setTimeout(resolve, 2000));
-              const task = {
-                title: this.title,
-                description: this.description,
-              };
-              console.log(task);
-              this.postFormLoading = false;
-              this.title = "";
-              this.description = "";
-              this.handleShowFormDrawer();
 
+              if (this.isUpdating && this.id !== 0) {
+                console.log({
+                  id: this.id,
+                  title: this.title,
+                  description: this.description,
+                  completed: this.completed,
+                });
+              } else {
+                console.log({
+                  title: this.title,
+                  description: this.description,
+                });
+              }
+              this.postFormLoading = false;
+              this.handleCloseFormDrawer();
               await this.getAllTask();
             } catch (error) {
               console.log(error);
             } finally {
               this.postFormLoading = false;
             }
+          },
+
+          handleSelectTask(task) {
+            this.isUpdating = true;
+            this.id = task.id;
+            this.title = task.title;
+            this.description = task.description;
+            this.completed = task.completed;
+
+            this.handleOpenFormDrawer();
           },
         }));
       });
@@ -102,7 +131,7 @@
             <span class="text-sm text-gray-500">Wednesday, 11 may</span>
           </span>
           <button
-            x-on:click="handleShowFormDrawer()"
+            x-on:click="handleOpenFormDrawer()"
             class="bg-blue-200 hover:bg-blue-300 active:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 text-blue-700 px-3 py-1 rounded-lg text-sm items-center flex gap-1"
           >
             <span>+</span>
@@ -263,6 +292,7 @@
               <div
                 class="bg-gray-100 p-3 rounded-lg space-y-2 hover:cursor-pointer hover:shadow-md"
                 x-bind:class="index == (tasks.length -1) ? `mb-14`: ``"
+                x-on:click="handleSelectTask(task)"
               >
                 <span class="flex justify-between items-center">
                   <h3
@@ -316,7 +346,7 @@
           <div
             x-show="showFormDrawer"
             x-transition.opacity
-            x-on:click="handleShowFormDrawer()"
+            x-on:click="handleCloseFormDrawer()"
             class="absolute inset-0 bg-black/30 transition-opacity duration-300"
           ></div>
         </div>
@@ -334,14 +364,16 @@
           <div class="flex justify-between items-center mb-3">
             <h3 class="text-lg font-medium text-gray-800">New Task</h3>
 
+            <!-- button -->
             <button
-              x-on:click="handleShowFormDrawer()"
+              x-on:click="handleCloseFormDrawer()"
               class="hover:bg-gray-300 active:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400 text-gray-700 px-3 py-1 rounded-lg text-sm items-center flex gap-1"
             >
               x
             </button>
           </div>
 
+          <!-- form -->
           <form x-on:submit.prevent="postSubmit()" class="space-y-3">
             <input
               x-model="title"
@@ -359,120 +391,145 @@
               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
             ></textarea>
 
-            <button
-              x-bind:disabled="postFormLoading"
-              type="submit"
-              class="bg-blue-200 hover:bg-blue-300 active:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 text-blue-700 px-3 py-1 rounded-lg text-sm items-center flex gap-1"
-            >
-              <template x-if="postFormLoading">
-                <span class="text-blue-700"
-                  ><svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="15"
-                    height="15"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <rect x="1" y="6" width="2.8" height="12">
-                      <animate
-                        id="spinner_a"
-                        begin="0;spinner_e.end-0.1s"
-                        attributeName="y"
-                        dur="0.6s"
-                        values="6;1;6"
-                        calcMode="spline"
-                        keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                      />
-                      <animate
-                        begin="0;spinner_e.end-0.1s"
-                        attributeName="height"
-                        dur="0.6s"
-                        values="12;22;12"
-                        calcMode="spline"
-                        keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                      />
-                    </rect>
-                    <rect x="5.8" y="6" width="2.8" height="12">
-                      <animate
-                        begin="spinner_a.begin+0.1s"
-                        attributeName="y"
-                        dur="0.6s"
-                        values="6;1;6"
-                        calcMode="spline"
-                        keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                      />
-                      <animate
-                        begin="spinner_a.begin+0.1s"
-                        attributeName="height"
-                        dur="0.6s"
-                        values="12;22;12"
-                        calcMode="spline"
-                        keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                      />
-                    </rect>
-                    <rect x="10.6" y="6" width="2.8" height="12">
-                      <animate
-                        begin="spinner_a.begin+0.2s"
-                        attributeName="y"
-                        dur="0.6s"
-                        values="6;1;6"
-                        calcMode="spline"
-                        keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                      />
-                      <animate
-                        begin="spinner_a.begin+0.2s"
-                        attributeName="height"
-                        dur="0.6s"
-                        values="12;22;12"
-                        calcMode="spline"
-                        keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                      />
-                    </rect>
-                    <rect x="15.4" y="6" width="2.8" height="12">
-                      <animate
-                        begin="spinner_a.begin+0.3s"
-                        attributeName="y"
-                        dur="0.6s"
-                        values="6;1;6"
-                        calcMode="spline"
-                        keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                      />
-                      <animate
-                        begin="spinner_a.begin+0.3s"
-                        attributeName="height"
-                        dur="0.6s"
-                        values="12;22;12"
-                        calcMode="spline"
-                        keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                      />
-                    </rect>
-                    <rect x="20.2" y="6" width="2.8" height="12">
-                      <animate
-                        id="spinner_e"
-                        begin="spinner_a.begin+0.4s"
-                        attributeName="y"
-                        dur="0.6s"
-                        values="6;1;6"
-                        calcMode="spline"
-                        keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                      />
-                      <animate
-                        begin="spinner_a.begin+0.4s"
-                        attributeName="height"
-                        dur="0.6s"
-                        values="12;22;12"
-                        calcMode="spline"
-                        keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                      />
-                    </rect></svg
-                ></span>
-              </template>
+            <div class="flex w-full items-center justify-between">
+              <!-- toggle -->
+              <label
+                x-show="isUpdating"
+                class="relative inline-flex items-center cursor-pointer select-none"
+              >
+                <input
+                  x-model="completed"
+                  x-bind:disabled="postFormLoading"
+                  type="checkbox"
+                  class="sr-only peer"
+                />
 
-              <span x-text="postFormLoading ? `Loading...` : `Save`">
-                Save
-              </span>
-            </button>
+                <div
+                  class="w-10 h-5 bg-gray-300 rounded-full peer-focus:ring-2 peer-focus:ring-blue-400 peer-checked:bg-blue-600 transition-colors duration-300 ease-in-out"
+                ></div>
+
+                <div
+                  class="absolute left-0.5 top-0.5 w-[16px] h-4 bg-white border border-gray-300 rounded-full transition-transform duration-300 ease-in-out peer-checked:translate-x-5"
+                ></div>
+              </label>
+
+              <!-- butto -->
+              <button
+                x-bind:disabled="postFormLoading"
+                type="submit"
+                class="bg-blue-200 hover:bg-blue-300 active:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 text-blue-700 flex flex-row px-3 py-1 rounded-lg text-sm items-center gap-1"
+              >
+                <template x-if="postFormLoading">
+                  <span class="text-blue-700">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width="15"
+                      height="15"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <rect x="1" y="6" width="2.8" height="12">
+                        <animate
+                          id="spinner_a"
+                          begin="0;spinner_e.end-0.1s"
+                          attributeName="y"
+                          dur="0.6s"
+                          values="6;1;6"
+                          calcMode="spline"
+                          keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                        />
+                        <animate
+                          begin="0;spinner_e.end-0.1s"
+                          attributeName="height"
+                          dur="0.6s"
+                          values="12;22;12"
+                          calcMode="spline"
+                          keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                        />
+                      </rect>
+                      <rect x="5.8" y="6" width="2.8" height="12">
+                        <animate
+                          begin="spinner_a.begin+0.1s"
+                          attributeName="y"
+                          dur="0.6s"
+                          values="6;1;6"
+                          calcMode="spline"
+                          keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                        />
+                        <animate
+                          begin="spinner_a.begin+0.1s"
+                          attributeName="height"
+                          dur="0.6s"
+                          values="12;22;12"
+                          calcMode="spline"
+                          keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                        />
+                      </rect>
+                      <rect x="10.6" y="6" width="2.8" height="12">
+                        <animate
+                          begin="spinner_a.begin+0.2s"
+                          attributeName="y"
+                          dur="0.6s"
+                          values="6;1;6"
+                          calcMode="spline"
+                          keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                        />
+                        <animate
+                          begin="spinner_a.begin+0.2s"
+                          attributeName="height"
+                          dur="0.6s"
+                          values="12;22;12"
+                          calcMode="spline"
+                          keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                        />
+                      </rect>
+                      <rect x="15.4" y="6" width="2.8" height="12">
+                        <animate
+                          begin="spinner_a.begin+0.3s"
+                          attributeName="y"
+                          dur="0.6s"
+                          values="6;1;6"
+                          calcMode="spline"
+                          keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                        />
+                        <animate
+                          begin="spinner_a.begin+0.3s"
+                          attributeName="height"
+                          dur="0.6s"
+                          values="12;22;12"
+                          calcMode="spline"
+                          keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                        />
+                      </rect>
+                      <rect x="20.2" y="6" width="2.8" height="12">
+                        <animate
+                          id="spinner_e"
+                          begin="spinner_a.begin+0.4s"
+                          attributeName="y"
+                          dur="0.6s"
+                          values="6;1;6"
+                          calcMode="spline"
+                          keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                        />
+                        <animate
+                          begin="spinner_a.begin+0.4s"
+                          attributeName="height"
+                          dur="0.6s"
+                          values="12;22;12"
+                          calcMode="spline"
+                          keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
+                        />
+                      </rect>
+                    </svg>
+                  </span>
+                </template>
+
+                <span x-text="postFormLoading ? `Loading...` : `Save`">
+                  Save
+                </span>
+              </button>
+            </div>
           </form>
         </div>
       </div>
