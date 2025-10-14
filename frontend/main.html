@@ -1,0 +1,124 @@
+<div
+  x-data="mainTask"
+  class="relative h-full w-full md:w-[325px] md:rounded-2xl shadow-lg bg-white dark:bg-gray-800 overflow-hidden"
+>
+  <!-- header -->
+  <div class="flex items-end justify-between px-5 mt-5 mb-2">
+    <span>
+      <h2 class="font-medium text-xl text-gray-800 dark:text-gray-200">Today's Task</h2>
+      <span class="text-sm text-gray-500 dark:text-gray-400">Wednesday, 11 may</span>
+    </span>
+    <button
+      x-on:click="handleOpenFormDrawer()"
+      class="bg-blue-200 hover:bg-blue-300 active:bg-blue-200 focus:outline-none focus:ring-1 focus:ring-blue-400 text-blue-700 dark:text-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 px-3 py-1 rounded-lg text-sm items-center flex gap-1 transition-colors"
+    >
+      <span>+</span>
+      <span>New task</span>
+    </button>
+  </div>
+
+  <!-- loading spinner -->
+  <template x-if="loading">
+    <span class="flex flex-col justify-center items-center text-blue-500 dark:text-blue-400 mt-7">
+      <!-- svg spinner -->
+      <span class="text-sm">Cargando...</span>
+    </span>
+  </template>
+
+  <!-- empty state -->
+  <template x-if="!loading && isEmpty">
+    <div class="flex flex-col w-full max-w-sm px-4 mx-auto mt-7">
+      <div class="p-3 mx-auto text-blue-500 bg-blue-100 dark:bg-blue-700 dark:text-blue-200 rounded-full">
+        <!-- icon -->
+      </div>
+      <h1 class="text-center text-lg text-gray-700 dark:text-gray-200">
+        You don't have Task
+      </h1>
+      <p class="text-center mt-2 text-gray-500 dark:text-gray-400">
+        Your search “Stripe” did not match any vendors. Please try again or create add a new vendor.
+      </p>
+    </div>
+  </template>
+
+  <!-- task card -->
+  <template x-if="!loading && !isEmpty">
+    <template x-for="(task, index) in tasks" :key="task.id">
+      <div x-data="{ expanded: false, completed: task.completed }" class="w-full">
+        <div
+          class="flex flex-row items-center w-full bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-300 rounded-md shadow-sm transition-all duration-300"
+        >
+          <button
+            x-on:click="expanded = !expanded"
+            class="flex flex-nowrap items-center gap-2 w-full pl-3 font-medium text-sm tracking-wide hover:bg-gray-300/50 dark:hover:bg-gray-600/50 rounded-md transition-colors duration-300 py-2"
+          >
+            <span>
+              <i
+                data-lucide="chevron-right"
+                class="transition-transform duration-300"
+                :class="expanded ? 'rotate-90' : 'rotate-0'"
+              ></i>
+            </span>
+            <h4 x-text="task.title" class="line-clamp-1"></h4>
+          </button>
+
+          <!-- dropdown eliminar -->
+          <div x-show="!expanded" x-data="{ open: false }" class="flex items-center">
+            <button
+              x-ref="button"
+              x-on:click="open = !open"
+              class="py-2 pl-2 pr-4 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-md transition-colors duration-300"
+            >
+              <i data-lucide="trash-2" class="h-[18px] w-[18px]"></i>
+            </button>
+
+            <div
+              x-show="open"
+              x-anchor.left-start="$refs.button"
+              x-anchor.offset.10="$refs.button"
+              x-transition
+              class="flex flex-col space-y-2 shadow-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 p-3 rounded-md border border-gray-200 dark:border-gray-600"
+            >
+              <h4 class="text-sm font-semibold">¿Está seguro?</h4>
+              <div class="flex gap-2 text-sm">
+                <button
+                  x-on:click="open = false"
+                  class="px-3 py-1 rounded-md bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 transition"
+                >
+                  Cancelar
+                </button>
+                <button
+                  class="px-3 py-1 rounded-md bg-red-200 dark:bg-red-700 hover:bg-red-300 dark:hover:bg-red-600 active:bg-red-200 dark:active:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-400 text-red-700 dark:text-red-200 transition"
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          x-show="expanded"
+          x-transition
+          class="flex flex-col p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm"
+        >
+          <p x-text="task.description" class="text-gray-700 dark:text-gray-200 text-sm leading-relaxed"></p>
+
+          <div class="flex items-start gap-2 p-2 mt-3 bg-white dark:bg-gray-700 rounded-md border border-gray-200 dark:border-gray-700">
+            <i data-lucide="info" class="text-blue-500 dark:text-blue-400 mt-[2px]"></i>
+            <div>
+              <span x-text="task.created_at" class="text-xs text-gray-500 dark:text-gray-400 block"></span>
+              <div class="flex items-center space-x-2 mt-0.5 text-sm text-gray-700 dark:text-gray-200">
+                <span>Autor: <b>me</b></span>
+                <span
+                  x-text="task.completed ? `Completado`: `Pendiente`"
+                  class="text-xs px-2 py-px rounded-lg"
+                  x-bind:class="task.completed ? `border-blue-500 text-blue-600 bg-blue-100 dark:bg-blue-800 dark:text-blue-200` : `border-orange-500 text-orange-600 bg-orange-100 dark:bg-orange-800 dark:text-orange-200`"
+                ></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+  </template>
+</div>
