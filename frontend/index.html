@@ -7,13 +7,26 @@
 
     <!-- #region development -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <!-- #endregion -->
+
+    <!-- Alpine Plugins -->
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/@alpinejs/anchor@3.x.x/dist/cdn.min.js"
+    ></script>
 
     <!-- alpine-js -->
     <script
       defer
       src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
     ></script>
+
+    <!-- <script src="https://unpkg.com/lucide@latest"></script> -->
 
     <script>
       document.addEventListener("alpine:init", () => {
@@ -63,6 +76,7 @@
             } catch (error) {
             } finally {
               this.loading = false;
+              lucide.createIcons();
             }
           },
 
@@ -130,9 +144,10 @@
             <h2 class="font-medium text-xl">Today's Task</h2>
             <span class="text-sm text-gray-500">Wednesday, 11 may</span>
           </span>
+          <!-- button-new-task -->
           <button
             x-on:click="handleOpenFormDrawer()"
-            class="bg-blue-200 hover:bg-blue-300 active:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 text-blue-700 px-3 py-1 rounded-lg text-sm items-center flex gap-1"
+            class="bg-blue-200 hover:bg-blue-300 active:bg-blue-200 focus:outline-none focus:ring-1 focus:ring-blue-400 text-blue-700 px-3 py-1 rounded-lg text-sm items-center flex gap-1 transition-colors"
           >
             <span>+</span>
             <span>New task</span>
@@ -280,62 +295,160 @@
             </p>
           </div>
         </template>
-
         <!-- list -->
         <div
-          x-init="getAllTask()"
+          x-data="{
+          async init(){
+            await getAllTask();
+            await await this.$nextTick();
+            lucide.createIcons();
+          }
+        }"
+          x-init="init()"
           class="h-full p-5 pr-2 overflow-auto space-y-2"
         >
           <template x-if="!loading && !isEmpty">
             <template x-for="(task, index) in tasks" :key="task.id">
               <!-- #region task card -->
+              <!-- collapse -->
               <div
-                class="bg-gray-100 p-3 rounded-lg space-y-2 hover:cursor-pointer hover:shadow-md"
-                x-bind:class="index == (tasks.length -1) ? `mb-14`: ``"
-                x-on:click="handleSelectTask(task)"
+                x-data="{ expanded: false, completed: task.completed }"
+                class="w-full"
               >
-                <span class="flex justify-between items-center">
-                  <h3
-                    x-text="task.title"
-                    class="text-md font-medium text-gray-700"
-                  >
-                    title placeholder
-                  </h3>
-                  <span
-                    class="p-1 hover:rounded-md hover:bg-gray-200 active:bg-gray-200 active:rounded-md"
-                  >
-                    <i
-                      data-lucide="chevron-right"
-                      class="text-gray-600 h-[20px] w-[20px]"
-                    ></i>
-                  </span>
-                </span>
-                <p
-                  x-text="task.description"
-                  class="text-sm text-gray-500 line-clamp-2"
+                <!-- Encabezado -->
+                <div
+                  class="flex flex-row items-center w-full bg-gray-200 text-gray-500 rounded-md shadow-sm transition-all duration-300"
                 >
-                  description placeholder
-                </p>
-                <div class="flex flex-row space-x-3 items-center">
-                  <span class="flex space-x-1 items-center">
-                    <span class="p-1">
-                      <i
-                        data-lucide="calendar-clock"
-                        class="text-gray-600 h-[20px] w-[20px]"
-                      ></i>
-                    </span>
-                    <span x-text="task.created_at" class="text-gray-600 text-sm"
-                      >23 oct 2025</span
-                    >
-                  </span>
-
-                  <span
-                    x-text="task.completed ? `Completada` : `Pendiente`"
-                    class="text-sm px-2 py-1 rounded-lg"
-                    x-bind:class="task.completed ? `border-blue-500 text-blue-500 bg-blue-100` : `border-orange-500 text-orange-500 bg-orange-100`"
+                  <!-- Botón expandir -->
+                  <button
+                    x-on:click="expanded = !expanded"
+                    class="flex flex-nowrap items-center gap-2 w-full pl-3 font-medium text-sm tracking-wide hover:bg-gray-300/50 rounded-md transition-colors duration-300 py-2"
                   >
-                    placeholder
-                  </span>
+                    <span
+                      ><i
+                        data-lucide="chevron-right"
+                        class="transition-transform duration-300"
+                        :class="expanded ? 'rotate-90' : 'rotate-0'"
+                      ></i
+                    ></span>
+                    <h4 x-text="task.title" class="line-clamp-1">
+                      Tarea pendiente
+                    </h4>
+                  </button>
+
+                  <!-- Dropdown eliminar -->
+                  <div
+                    x-show="!expanded"
+                    x-data="{ open: false }"
+                    class="flex items-center"
+                  >
+                    <button
+                      x-ref="button"
+                      x-on:click="open = !open"
+                      class="py-2 pl-2 pr-4 hover:bg-gray-300 rounded-md transition-colors duration-300"
+                    >
+                      <i data-lucide="trash-2" class="h-[18px] w-[18px]"></i>
+                    </button>
+
+                    <!-- Confirmación -->
+                    <div
+                      x-show="open"
+                      x-anchor.left-start="$refs.button"
+                      x-anchor.offset.10="$refs.button"
+                      x-transition
+                      class="flex flex-col space-y-2 shadow-lg bg-white text-gray-700 p-3 rounded-md border border-gray-200"
+                    >
+                      <h4 class="text-sm font-semibold">¿Está seguro?</h4>
+                      <div class="flex gap-2 text-sm">
+                        <button
+                          x-on:click="open = false"
+                          class="px-3 py-1 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700 transition"
+                        >
+                          Cancelar
+                        </button>
+                        <!-- button-delete -->
+                        <button
+                          class="px-3 py-1 rounded-md bg-red-200 hover:bg-red-300 active:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-400 text-red-700 transition"
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Contenido expandible -->
+                <div
+                  x-show="expanded"
+                  x-transition
+                  class="flex flex-col p-3 bg-gray-50 border border-gray-200 shadow-sm"
+                >
+                  <p
+                    x-text="task.description"
+                    class="text-gray-700 text-sm leading-relaxed"
+                  >
+                    Lorem ipsum dolor sit
+                  </p>
+
+                  <!-- Info -->
+                  <div
+                    class="flex items-start gap-2 p-2 mt-3 bg-white rounded-md border border-gray-200"
+                  >
+                    <i data-lucide="info" class="text-blue-500 mt-[2px]"></i>
+                    <div>
+                      <span
+                        x-text="task.created_at"
+                        class="text-xs text-gray-500 block"
+                        >2025-10-13T10:00:00Z</span
+                      >
+                      <div
+                        class="flex items-center space-x-2 mt-0.5 text-sm text-gray-700"
+                      >
+                        <span>Autor: <b>me</b></span>
+
+                        <!-- tag -->
+                        <span
+                          x-text="task.completed ? `Completado`: `Pendiente`"
+                          class="text-xs px-2 py-px rounded-lg"
+                          x-bind:class="task.completed ? `border-blue-500 text-blue-600 bg-blue-100` : `border-orange-500 text-orange-600 bg-orange-100`"
+                        >
+                          Completado
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Footer -->
+                  <div class="flex justify-between items-center px-2 pt-3">
+                    <!-- Switch -->
+                    <label
+                      class="relative inline-flex items-center cursor-pointer select-none"
+                    >
+                      <input
+                        x-model="completed"
+                        type="checkbox"
+                        class="sr-only peer"
+                      />
+                      <div
+                        class="w-10 h-5 bg-gray-300 rounded-full peer-focus:ring-2 peer-focus:ring-blue-400 peer-checked:bg-blue-600 transition-colors duration-300 ease-in-out"
+                      ></div>
+                      <div
+                        class="absolute left-0.5 top-0.5 w-[16px] h-4 bg-white border border-gray-300 rounded-full transition-transform duration-300 ease-in-out peer-checked:translate-x-5"
+                      ></div>
+                    </label>
+                    <!-- button-actions -->
+                    <div class="flex gap-1 text-gray-600">
+                      <button
+                        class="hover:bg-red-300 hover:text-red-600 rounded-md p-2 transition-colors duration-300"
+                      >
+                        <i data-lucide="trash-2" class="h-[18px] w-[18px]"></i>
+                      </button>
+                      <button
+                        class="hover:bg-blue-300 hover:text-blue-600 rounded-md p-2 transition-colors duration-300"
+                      >
+                        <i data-lucide="pencil" class="h-[18px] w-[18px]"></i>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
               <!-- #endregion -->
@@ -364,12 +477,12 @@
           <div class="flex justify-between items-center mb-3">
             <h3 class="text-lg font-medium text-gray-800">New Task</h3>
 
-            <!-- button -->
+            <!-- button-close-drawer -->
             <button
               x-on:click="handleCloseFormDrawer()"
-              class="hover:bg-gray-300 active:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400 text-gray-700 px-3 py-1 rounded-lg text-sm items-center flex gap-1"
+              class="hover:bg-gray-300 active:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-gray-400 text-gray-700 p-2 rounded-lg text-sm items-center flex gap-1 transition-colors"
             >
-              x
+              <i data-lucide="x" class="h-[18px] w-[18px]"></i>
             </button>
           </div>
 
@@ -413,11 +526,11 @@
                 ></div>
               </label>
 
-              <!-- butto -->
+              <!-- button-save -->
               <button
                 x-bind:disabled="postFormLoading"
                 type="submit"
-                class="bg-blue-200 hover:bg-blue-300 active:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 text-blue-700 flex flex-row px-3 py-1 rounded-lg text-sm items-center gap-1"
+                class="bg-blue-200 hover:bg-blue-300 active:bg-blue-200 focus:outline-none focus:ring-1 focus:ring-blue-400 text-blue-700 flex flex-row px-3 py-1 rounded-lg text-sm items-center gap-1 transition-colors"
               >
                 <template x-if="postFormLoading">
                   <span class="text-blue-700">
@@ -534,6 +647,11 @@
         </div>
       </div>
     </aside>
+
+    <!-- scripts  -->
+    <script>
+      lucide.createIcons();
+    </script>
     <!-- #endregion -->
   </body>
 </html>
