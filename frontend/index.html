@@ -1,657 +1,679 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="./output.css" rel="stylesheet" />
+<html lang="en" x-data="{ isDark: false }" x-bind:class="{ 'dark': isDark }">
 
-    <!-- #region development -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <!-- #endregion -->
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="./output.css" rel="stylesheet" />
 
-    <!-- Alpine Plugins -->
-    <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"
-    ></script>
-    <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/@alpinejs/anchor@3.x.x/dist/cdn.min.js"
-    ></script>
+  <!-- #region development -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>  -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- #endregion -->
 
-    <!-- alpine-js -->
-    <script
-      defer
-      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
-    ></script>
+  <!-- Alpine Plugins -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/anchor@3.x.x/dist/cdn.min.js"></script>
 
-    <!-- <script src="https://unpkg.com/lucide@latest"></script> -->
+  <!-- alpine-js -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-    <script>
-      document.addEventListener("alpine:init", () => {
-        Alpine.data("mainTask", () => ({
-          showFormDrawer: false,
+  <!-- <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script> -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>  -->
 
-          id: 0,
-          title: "",
-          description: "",
-          completed: false,
-          postFormLoading: false,
-          isUpdating: false,
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+    };
+  </script>
 
-          handleCloseFormDrawer() {
-            this.id = 0;
-            this.title = "";
-            this.description = "";
-            this.completed = false;
-            this.isUpdating = false;
-            this.showFormDrawer = false;
-          },
+  <!-- <script src="https://unpkg.com/lucide@latest"></script> -->
 
-          handleOpenFormDrawer() {
-            this.showFormDrawer = true;
-          },
+  <script>
+    document.addEventListener("alpine:init", () => {
+      Alpine.data("mainTask", () => ({
+        showFormDrawer: false,
 
-          loading: false,
-          isEmpty: true,
-          tasks: [],
-          async getAllTask() {
-            try {
-              this.loading = true;
-              await new Promise((resolve) => setTimeout(resolve, 2000));
+        id: 0,
+        title: "",
+        description: "",
+        completed: false,
+        postFormLoading: false,
+        isUpdating: false,
 
-              //TODO : fecth data from api
-              this.tasks = Array.from({ length: 10 }, (_, i) => ({
-                id: i + 1,
-                title: `Example title ${i + 1}`,
-                description:
-                  "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Animi, pariatur deserunt maiores odit aliquid exercitationem perferendis assumenda delectus omnis similique explicabo molestias minus, earum molestiae id! Voluptatum unde optio harum!",
-                completed: i % 2 === 0,
-                created_at: new Date().toLocaleDateString(),
-                updated_at: new Date().toLocaleDateString(),
-              }));
+        handleCloseFormDrawer() {
+          this.id = 0;
+          this.title = "";
+          this.description = "";
+          this.completed = false;
+          this.isUpdating = false;
+          this.showFormDrawer = false;
+        },
 
-              this.isEmpty = this.tasks.length === 0;
-            } catch (error) {
-            } finally {
-              this.loading = false;
-              lucide.createIcons();
+        handleOpenFormDrawer() {
+          this.showFormDrawer = true;
+        },
+
+        loading: false,
+        isEmpty: true,
+        tasks: [],
+        async getAllTask() {
+          try {
+            this.loading = true;
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+
+            //TODO : fecth data from api
+            this.tasks = Array.from({ length: 10 }, (_, i) => ({
+              id: i + 1,
+              title: `Example title ${i + 1}`,
+              description:
+                "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Animi, pariatur deserunt maiores odit aliquid exercitationem perferendis assumenda delectus omnis similique explicabo molestias minus, earum molestiae id! Voluptatum unde optio harum!",
+              completed: i % 2 === 0,
+              created_at: new Date().toLocaleDateString(),
+              updated_at: new Date().toLocaleDateString(),
+            }));
+
+            this.isEmpty = this.tasks.length === 0;
+          } catch (error) {
+          } finally {
+            this.loading = false;
+            lucide.createIcons();
+          }
+        },
+
+        async postSubmit() {
+          try {
+            this.postFormLoading = true;
+            // TODO: implemented method
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+
+            if (this.isUpdating && this.id !== 0) {
+              console.log({
+                id: this.id,
+                title: this.title,
+                description: this.description,
+                completed: this.completed,
+              });
+            } else {
+              console.log({
+                title: this.title,
+                description: this.description,
+              });
             }
-          },
+            this.postFormLoading = false;
+            this.handleCloseFormDrawer();
+            await this.getAllTask();
+          } catch (error) {
+            console.log(error);
+          } finally {
+            this.postFormLoading = false;
+          }
+        },
 
-          async postSubmit() {
-            try {
-              this.postFormLoading = true;
-              // TODO: implemented method
-              await new Promise((resolve) => setTimeout(resolve, 2000));
+        handleSelectTask(task) {
+          this.isUpdating = true;
+          this.id = task.id;
+          this.title = task.title;
+          this.description = task.description;
+          this.completed = task.completed;
 
-              if (this.isUpdating && this.id !== 0) {
-                console.log({
-                  id: this.id,
-                  title: this.title,
-                  description: this.description,
-                  completed: this.completed,
-                });
-              } else {
-                console.log({
-                  title: this.title,
-                  description: this.description,
-                });
-              }
-              this.postFormLoading = false;
-              this.handleCloseFormDrawer();
-              await this.getAllTask();
-            } catch (error) {
-              console.log(error);
-            } finally {
-              this.postFormLoading = false;
-            }
-          },
+          this.handleOpenFormDrawer();
+        },
+      }));
+    });
+  </script>
 
-          handleSelectTask(task) {
-            this.isUpdating = true;
-            this.id = task.id;
-            this.title = task.title;
-            this.description = task.description;
-            this.completed = task.completed;
+  <style>
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
 
-            this.handleOpenFormDrawer();
-          },
-        }));
-      });
-    </script>
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+  *::-webkit-scrollbar {
+    width: 8px; 
+  }
 
-    <title>TODO APP</title>
-  </head>
-  <body
-    class="flex flex-col-reverse w-full md:h-screen overflow-y-auto space-y-3 md:flex-row md:overflow-y-hidden md:space-y-0 md:space-x-3 bg-gray-900"
-  >
-    <!-- #region main app -->
-    <main class="flex justify-center items-center w-full bg-amber-400">
-      <h1 x-data="{ message: 'I ❤️ Alpine' }" x-text="message"></h1>
-    </main>
-    <aside
-      class="flex justify-center items-center h-screen w-full md:w-1/2 p-4 md:px-10 bg-gray-200"
-    >
-      <div
-        x-data="mainTask"
-        class="relative h-full w-full md:w-[325px] md:rounded-2xl shadow-lg bg-white overflow-hidden"
-      >
-        <!-- #region header -->
-        <div class="flex items-end justify-between px-5 mt-5 mb-2">
-          <span>
-            <h2 class="font-medium text-xl">Today's Task</h2>
-            <span class="text-sm text-gray-500">Wednesday, 11 may</span>
-          </span>
-          <!-- button-new-task -->
-          <button
-            x-on:click="handleOpenFormDrawer()"
-            class="bg-blue-200 hover:bg-blue-300 active:bg-blue-200 focus:outline-none focus:ring-1 focus:ring-blue-400 text-blue-700 px-3 py-1 rounded-lg text-sm items-center flex gap-1 transition-colors"
-          >
-            <span>+</span>
-            <span>New task</span>
-          </button>
-        </div>
-        <!-- #endregion -->
+  *::-webkit-scrollbar-track {
+    background: rgba(203, 213, 225, 0.3); 
+    border-radius: 9999px; 
+  }
 
-        <template x-if="loading">
-          <!-- #region spinner loading -->
-          <span
-            class="flex flex-col justify-center items-center text-blue-500 mt-7"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              width="24"
-              height="24"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <rect x="1" y="6" width="2.8" height="12">
-                <animate
-                  id="spinner_a"
-                  begin="0;spinner_e.end-0.1s"
-                  attributeName="y"
-                  dur="0.6s"
-                  values="6;1;6"
-                  calcMode="spline"
-                  keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                />
-                <animate
-                  begin="0;spinner_e.end-0.1s"
-                  attributeName="height"
-                  dur="0.6s"
-                  values="12;22;12"
-                  calcMode="spline"
-                  keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                />
-              </rect>
-              <rect x="5.8" y="6" width="2.8" height="12">
-                <animate
-                  begin="spinner_a.begin+0.1s"
-                  attributeName="y"
-                  dur="0.6s"
-                  values="6;1;6"
-                  calcMode="spline"
-                  keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                />
-                <animate
-                  begin="spinner_a.begin+0.1s"
-                  attributeName="height"
-                  dur="0.6s"
-                  values="12;22;12"
-                  calcMode="spline"
-                  keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                />
-              </rect>
-              <rect x="10.6" y="6" width="2.8" height="12">
-                <animate
-                  begin="spinner_a.begin+0.2s"
-                  attributeName="y"
-                  dur="0.6s"
-                  values="6;1;6"
-                  calcMode="spline"
-                  keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                />
-                <animate
-                  begin="spinner_a.begin+0.2s"
-                  attributeName="height"
-                  dur="0.6s"
-                  values="12;22;12"
-                  calcMode="spline"
-                  keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                />
-              </rect>
-              <rect x="15.4" y="6" width="2.8" height="12">
-                <animate
-                  begin="spinner_a.begin+0.3s"
-                  attributeName="y"
-                  dur="0.6s"
-                  values="6;1;6"
-                  calcMode="spline"
-                  keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                />
-                <animate
-                  begin="spinner_a.begin+0.3s"
-                  attributeName="height"
-                  dur="0.6s"
-                  values="12;22;12"
-                  calcMode="spline"
-                  keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                />
-              </rect>
-              <rect x="20.2" y="6" width="2.8" height="12">
-                <animate
-                  id="spinner_e"
-                  begin="spinner_a.begin+0.4s"
-                  attributeName="y"
-                  dur="0.6s"
-                  values="6;1;6"
-                  calcMode="spline"
-                  keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                />
-                <animate
-                  begin="spinner_a.begin+0.4s"
-                  attributeName="height"
-                  dur="0.6s"
-                  values="12;22;12"
-                  calcMode="spline"
-                  keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                />
-              </rect>
-            </svg>
+  *::-webkit-scrollbar-thumb {
+    background-color: rgba(59, 130, 246, 0.5); 
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+ 
+  .dark *::-webkit-scrollbar-track {
+    background: rgba(55, 65, 81, 0.3); 
+  }
 
-            <span class="text-sm">Cargando...</span>
-          </span>
-          <!-- #endregion -->
-        </template>
+  .dark *::-webkit-scrollbar-thumb {
+    background-color: rgba(96, 165, 250, 0.5);
+  }
 
-        <template x-if="!loading && isEmpty">
-          <div class="flex flex-col w-full max-w-sm px-4 mx-auto mt-7">
-            <div class="p-3 mx-auto text-blue-500 bg-blue-100 rounded-full">
-              <!-- TODO: change icon -->
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-6 h-6"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-                />
-              </svg>
-            </div>
-            <h1 class="text-center text-lg text-gray-700">
-              You don't have Task
+  </style>
+
+  <title>TODO APP</title>
+</head>
+
+<body
+  class="flex flex-col-reverse w-full md:h-screen overflow-y-auto space-y-3 md:flex-row md:overflow-y-hidden md:space-y-0 md:space-x-3 bg-gray-200 dark:bg-gray-900">
+  <main x-data="scrollNav()" class="flex w-full h-screen overflow-hidden bg-gray-200 dark:bg-gray-900">
+    <!-- Barra lateral -->
+    <ul
+      class="flex flex-col justify-center items-center relative bg-gray-200/60 dark:bg-gray-800/60 backdrop-blur-md shadow-inner w-[60px] py-6 space-y-6 rounded-2xl">
+      <template x-for="(item, index) in navItems" :key="index">
+        <li
+          class="flex items-center justify-center h-[60px] px-4 py-2 transform rotate-90 origin-center text-sm font-semibold cursor-pointer relative transition-all duration-300 ease-in-out hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white/40 dark:hover:bg-white/10 hover:backdrop-blur-lg hover:shadow-[0_0_10px_rgba(59,130,246,0.3)] rounded-xl"
+          :class="active === item.id 
+          ? 'text-white font-bold bg-blue-600/70 dark:bg-blue-500/40 backdrop-blur-md shadow-[0_0_10px_rgba(59,130,246,0.5)] rounded-xl' 
+          : 'text-gray-800 dark:text-gray-200'" x-on:click="scrollTo(item.id)">
+          <span x-text="item.label"></span>
+        </li>
+      </template>
+    </ul>
+
+    <!-- Contenido desplazable -->
+    <div class="flex-1 overflow-y-auto scroll-smooth no-scrollbar" x-ref="container"
+      @scroll.debounce.100="checkActive()">
+      <section id="home" class="h-screen flex flex-col items-center justify-center px-6 transition-colors duration-300">
+        <div class="flex flex-col items-center gap-5 backdrop-blur-md p-8 transition-all duration-300">
+          <div class="flex items-center gap-3 w-full mb-2">
+            <i data-lucide="notebook-pen" class="w-10 h-10 text-blue-600 dark:text-blue-400 animate-pulse"></i>
+            <h1 class="text-4xl font-extrabold text-gray-800 dark:text-gray-100 tracking-tight">
+              Todo App
             </h1>
-            <p class="text-center mt-2 text-gray-500 dark:text-gray-400">
-              Your search “Stripe” did not match any vendors. Please try again
-              or create add a new vendor.
+          </div>
+
+          <!-- Descripción -->
+          <p class="text-gray-700 dark:text-gray-300 text-base leading-relaxed">
+            <span class="font-semibold">Todo App</span> es una aplicación web
+            desarrollada como parte del proyecto académico de la asignatura
+            <span class="italic text-blue-600 dark:text-blue-400">Implantación de Sistemas</span>
+            de la
+            <span class="font-semibold">Universidad de Sonsonate</span>.
+          </p>
+
+          <p class="text-gray-700 dark:text-gray-300 text-base leading-relaxed">
+            El objetivo principal es poner en práctica conceptos de desarrollo
+            de software, diseño de interfaces y manipulación de datos mediante
+            tecnologías modernas
+          </p>
+
+          <!-- Funcionalidades -->
+          <div class="w-full text-left">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2 mb-4">
+              Funcionalidades principales
+            </h2>
+            <ul class="space-y-2 pl-6">
+              <li class="flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                <i data-lucide="plus-circle" class="w-5 h-5 text-green-500"></i> Crear nuevas tareas
+              </li>
+              <li class="flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                <i data-lucide="edit-3" class="w-5 h-5 text-yellow-500"></i> Editar tareas existentes
+              </li>
+              <li class="flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                <i data-lucide="trash-2" class="w-5 h-5 text-red-500"></i> Eliminar tareas completadas
+              </li>
+              <li class="flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                <i data-lucide="list-checks" class="w-5 h-5 text-indigo-500"></i> Listar todas las tareas guardadas
+              </li>
+              <li class="flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                <i data-lucide="moon-star" class="w-5 h-5 text-purple-500"></i> Cambiar entre modo claro y oscuro
+              </li>
+            </ul>
+          </div>
+          <!-- Estado visual del tema -->
+          <div class="flex gap-2 w-full items-center mt-2">
+            <span x-text="isDark ? '🌙 Modo oscuro activado' : '☀️ Modo claro activado'"
+              class="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300"></span>
+
+            <button x-on:click="isDark = !isDark"
+              class="bg-blue-200 hover:bg-blue-300 active:bg-blue-200 focus:outline-none focus:ring-1 focus:ring-blue-400 text-blue-700 dark:text-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 px-3 py-1 rounded-lg text-sm items-center flex gap-1 transition-colors">
+              cambiar
+            </button>
+          </div>
+      </section>
+
+      <section id="dev" class="h-screen flex flex-col items-center justify-center px-6 transition-colors duration-300">
+        <div class="flex flex-col items-center gap-5 backdrop-blur-md  p-8 transition-all duration-300">
+          <!-- Logo o ícono -->
+          <div class="flex items-center gap-3 w-full mb-2">
+            <i data-lucide="cpu" class="w-10 h-10 text-blue-600 dark:text-blue-400 animate-pulse"></i>
+            <h1 class="text-4xl font-extrabold text-gray-800 dark:text-gray-100 tracking-tight">
+              Development
+            </h1>
+          </div>
+
+          <!-- Descripción general -->
+          <p class="text-gray-700 dark:text-gray-300 text-base leading-relaxed">
+            Esta aplicación web destaca por su <span class="font-semibold">alta reactividad</span> e <span
+              class="font-semibold">interactividad</span>.
+            Cada acción del usuario se refleja de forma inmediata en la interfaz, proporcionando una experiencia fluida
+            y dinámica.
+          </p>
+
+          <!-- Tecnologías utilizadas -->
+          <div class="w-full text-left">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2 mb-4">
+              Tecnologías empleadas
+            </h2>
+            <ul class="space-y-2 pl-6 text-gray-700 dark:text-gray-300">
+              <li class="flex items-center gap-3">
+                <i data-lucide="code-xml" class="w-5 h-5 text-orange-500"></i>
+                HTML5 para la estructura de la aplicación
+              </li>
+              <li class="flex items-center gap-3">
+                <i data-lucide="code" class="w-5 h-5 text-green-500"></i>
+                TailwindCSS para estilos modernos y responsive
+              </li>
+              <li class="flex items-center gap-3">
+                <i data-lucide="zap" class="w-5 h-5 text-purple-500"></i>
+                Alpine.js para interactividad y manejo de estados reactivos
+              </li>
+              <li class="flex items-center gap-3">
+                <i data-lucide="code" class="w-5 h-5 text-yellow-500"></i>
+                JavaScript para lógica y manipulación del DOM
+              </li>
+            </ul>
+          </div>
+
+          <!-- Ejemplo de interactividad -->
+          <div class="w-full mt-5 text-left">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2 mb-2">
+              <i data-lucide="cpu" class="w-5 h-5 text-blue-500 dark:text-blue-400"></i>
+              Interactividad en acción
+            </h2>
+            <p class="text-gray-700 dark:text-gray-300 mb-2">
+              Puedes probar la interactividad cambiando el tema de la aplicación con el botón abajo:
+            </p>
+            <button x-on:click="isDark = !isDark"
+              class="bg-blue-200 hover:bg-blue-300 active:bg-blue-200 focus:outline-none focus:ring-1 focus:ring-blue-400 text-blue-700 dark:text-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 px-3 py-1 rounded-lg text-sm flex gap-1 items-center transition-colors">
+              Cambiar tema
+            </button>
+          </div>
+        </div>
+      </section>
+
+
+      <section id="about"
+        class="h-screen flex flex-col items-center justify-center px-6 transition-colors duration-300">
+        <div class="flex flex-col items-center gap-5 backdrop-blur-md  p-8 transition-all duration-300">
+          <!-- Logo o ícono -->
+          <div class="flex items-center gap-3 w-full mb-2">
+            <i data-lucide="user" class="w-10 h-10 text-blue-600 dark:text-blue-400 animate-pulse"></i>
+            <h1 class="text-4xl font-extrabold text-gray-800 dark:text-gray-100 tracking-tight">
+              About
+            </h1>
+          </div>
+
+          <p class="text-gray-700 dark:text-gray-300 text-base leading-relaxed">
+            Esta aplicación, <span class="font-semibold">Todo App</span>, es parte de una tarea de la asignatura
+            <span class="italic text-blue-600 dark:text-blue-400">Implantación de Sistemas</span>
+            de la <span class="font-semibold">Universidad de Sonsonate</span>. Sí, otra tarea más,
+            pero al menos esta tiene estilo.
+          </p>
+
+          <!-- Sobre el desarrollador -->
+          <div class="w-full text-left mt-4">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2 mb-2">
+              <i data-lucide="user-check" class="w-5 h-5 text-green-500"></i>
+              Sobre el desarrollador
+            </h2>
+            <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+              Hola, soy <span class="font-semibold">Marcos Enrique Ramos Hernandez</span>, estudiante y programador
+              ocasionalmente heroico. Este proyecto fue mi excusa perfecta para practicar
+              <span class="font-semibold">HTML, TailwindCSS, Alpine.js</span> y mis habilidades de
+              manipulación del DOM (sí, todavía me sorprende que funcione a la primera).
+
+              <span class="font-semibold">...Espero xd</span>
+            </p>
+            <p class="text-gray-700 dark:text-gray-300 leading-relaxed mt-2">
+              Por supuesto, no lo hice solo: tuve la inestimable ayuda de <span
+                class="font-semibold text-purple-500">ChatGPT</span>,
+              que básicamente me salvó de escribir miles de líneas de código aburrido. Gracias, asistente 🤖.
             </p>
           </div>
-        </template>
-        <!-- list -->
-        <div
-          x-data="{
+
+          <!-- Créditos -->
+          <div
+            class="text-center mt-6 border-t border-gray-300/50 dark:border-gray-700/50 pt-4 text-sm text-gray-600 dark:text-gray-400 space-y-2">
+            <p class="flex items-center justify-center gap-2">
+              <i data-lucide="book-open" class="w-4 h-4 text-blue-500 dark:text-blue-400"></i>
+              Universidad de Sonsonate — Facultad de Ingeniería y Ciencias Naturales
+            </p>
+
+            <p class="flex items-center justify-center gap-2">
+              <i data-lucide="cpu" class="w-4 h-4 text-purple-500 dark:text-purple-400"></i>
+              Con la colaboración de ChatGPT (sí, me ayudó y no me avergüenzo 😎)
+            </p>
+            <p class="flex items-center justify-center gap-2">
+              <i data-lucide="calendar" class="w-4 h-4 text-green-500 dark:text-green-400"></i>
+              Año: 2025
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <aside class="flex justify-center items-center h-screen p-4 md:pr-10">
+    <div x-data="mainTask"
+      class="relative w-full md:w-[325px] h-full max-h-[760px] md:rounded-2xl shadow-lg bg-white dark:bg-gray-800 overflow-hidden border border-gray-300/20 dark:border-gray-700/20 backdrop-blur-sm transition-colors duration-300">
+      <!-- header -->
+      <div class="flex items-end justify-between px-5 mt-5 mb-2">
+        <span>
+          <h2 class="font-medium text-xl text-gray-800 dark:text-gray-200">
+            Today's Task
+          </h2>
+          <span class="text-sm text-gray-500 dark:text-gray-400">Wednesday, 11 may</span>
+        </span>
+        <button x-on:click="handleOpenFormDrawer()"
+          class="bg-blue-200 hover:bg-blue-300 active:bg-blue-200 focus:outline-none focus:ring-1 focus:ring-blue-400 text-blue-700 dark:text-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 px-3 py-1 rounded-lg text-sm items-center flex gap-1 transition-colors">
+          <span>+</span>
+          <span>New task</span>
+        </button>
+      </div>
+
+      <!-- loading template -->
+      <template x-if="loading">
+        <span class="flex flex-col justify-center items-center text-blue-500 dark:text-blue-400 mt-7">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"
+            aria-hidden="true">
+            <rect x="1" y="6" width="2.8" height="12">
+              <animate id="spinner_a" begin="0;spinner_e.end-0.1s" attributeName="y" dur="0.6s" values="6;1;6"
+                calcMode="spline" keySplines=".36,.61,.3,.98;.36,.61,.3,.98" />
+              <animate begin="0;spinner_e.end-0.1s" attributeName="height" dur="0.6s" values="12;22;12"
+                calcMode="spline" keySplines=".36,.61,.3,.98;.36,.61,.3,.98" />
+            </rect>
+            <rect x="5.8" y="6" width="2.8" height="12">
+              <animate begin="spinner_a.begin+0.1s" attributeName="y" dur="0.6s" values="6;1;6" calcMode="spline"
+                keySplines=".36,.61,.3,.98;.36,.61,.3,.98" />
+              <animate begin="spinner_a.begin+0.1s" attributeName="height" dur="0.6s" values="12;22;12"
+                calcMode="spline" keySplines=".36,.61,.3,.98;.36,.61,.3,.98" />
+            </rect>
+            <rect x="10.6" y="6" width="2.8" height="12">
+              <animate begin="spinner_a.begin+0.2s" attributeName="y" dur="0.6s" values="6;1;6" calcMode="spline"
+                keySplines=".36,.61,.3,.98;.36,.61,.3,.98" />
+              <animate begin="spinner_a.begin+0.2s" attributeName="height" dur="0.6s" values="12;22;12"
+                calcMode="spline" keySplines=".36,.61,.3,.98;.36,.61,.3,.98" />
+            </rect>
+            <rect x="15.4" y="6" width="2.8" height="12">
+              <animate begin="spinner_a.begin+0.3s" attributeName="y" dur="0.6s" values="6;1;6" calcMode="spline"
+                keySplines=".36,.61,.3,.98;.36,.61,.3,.98" />
+              <animate begin="spinner_a.begin+0.3s" attributeName="height" dur="0.6s" values="12;22;12"
+                calcMode="spline" keySplines=".36,.61,.3,.98;.36,.61,.3,.98" />
+            </rect>
+            <rect x="20.2" y="6" width="2.8" height="12">
+              <animate id="spinner_e" begin="spinner_a.begin+0.4s" attributeName="y" dur="0.6s" values="6;1;6"
+                calcMode="spline" keySplines=".36,.61,.3,.98;.36,.61,.3,.98" />
+              <animate begin="spinner_a.begin+0.4s" attributeName="height" dur="0.6s" values="12;22;12"
+                calcMode="spline" keySplines=".36,.61,.3,.98;.36,.61,.3,.98" />
+            </rect>
+          </svg>
+
+          <span class="text-sm">Cargando...</span>
+        </span>
+      </template>
+
+      <!-- empty state template -->
+      <template x-if="!loading && isEmpty">
+        <div class="flex flex-col w-full max-w-sm px-4 mx-auto mt-7">
+          <div class="p-3 mx-auto text-blue-500 bg-blue-100 dark:bg-blue-700 dark:text-blue-200 rounded-full">
+            <!-- TODO: change icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+          </div>
+          <h1 class="text-center text-lg text-gray-700 dark:text-gray-200">
+            You don't have Task
+          </h1>
+          <p class="text-center mt-2 text-gray-500 dark:text-gray-400">
+            Your search “Stripe” did not match any vendors. Please try again
+            or create add a new vendor.
+          </p>
+        </div>
+      </template>
+
+      <!-- list -->
+      <div x-data="{
           async init(){
             await getAllTask();
             await await this.$nextTick();
             lucide.createIcons();
           }
-        }"
-          x-init="init()"
-          class="h-full p-5 pr-2 overflow-auto space-y-2"
-        >
-          <template x-if="!loading && !isEmpty">
-            <template x-for="(task, index) in tasks" :key="task.id">
-              <!-- #region task card -->
-              <!-- collapse -->
+        }" x-init="init()" class="h-full p-5 pr-2 overflow-auto">
+        <template x-if="!loading && !isEmpty">
+          <template x-for="(task, index) in tasks" :key="task.id">
+            <!-- #region task card -->
+            <!-- collapse -->
+            <div x-data="{ expanded: false, completed: task.completed }" class="w-full mb-2"
+              x-bind:class="index === (tasks.length -1) ? `mb-7`: ``">
+              <!-- Encabezado -->
               <div
-                x-data="{ expanded: false, completed: task.completed }"
-                class="w-full"
-              >
-                <!-- Encabezado -->
-                <div
-                  class="flex flex-row items-center w-full bg-gray-200 text-gray-500 rounded-md shadow-sm transition-all duration-300"
-                >
-                  <!-- Botón expandir -->
-                  <button
-                    x-on:click="expanded = !expanded"
-                    class="flex flex-nowrap items-center gap-2 w-full pl-3 font-medium text-sm tracking-wide hover:bg-gray-300/50 rounded-md transition-colors duration-300 py-2"
-                  >
-                    <span
-                      ><i
-                        data-lucide="chevron-right"
-                        class="transition-transform duration-300"
-                        :class="expanded ? 'rotate-90' : 'rotate-0'"
-                      ></i
-                    ></span>
-                    <h4 x-text="task.title" class="line-clamp-1">
-                      Tarea pendiente
-                    </h4>
+                class="flex flex-row items-center w-full bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-300 rounded-md shadow-sm transition-all duration-300">
+                <!-- Botón expandir -->
+                <button x-on:click="expanded = !expanded"
+                  class="flex flex-nowrap items-center gap-2 w-full pl-3 font-medium text-sm tracking-wide hover:bg-gray-300/50 dark:hover:bg-gray-600/50 rounded-md transition-colors duration-300 py-2">
+                  <span><i data-lucide="chevron-right" class="transition-transform duration-300"
+                      :class="expanded ? 'rotate-90' : 'rotate-0'"></i></span>
+                  <h4 x-text="task.title" class="line-clamp-1">
+                    Tarea pendiente
+                  </h4>
+                </button>
+
+                <!-- Dropdown eliminar -->
+                <div x-show="!expanded" x-data="{ open: false }" class="flex items-center">
+                  <button x-ref="button" x-on:click="open = !open"
+                    class="py-2 pl-2 pr-4 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-md transition-colors duration-300">
+                    <i data-lucide="trash-2" class="h-[18px] w-[18px]"></i>
                   </button>
 
-                  <!-- Dropdown eliminar -->
-                  <div
-                    x-show="!expanded"
-                    x-data="{ open: false }"
-                    class="flex items-center"
-                  >
-                    <button
-                      x-ref="button"
-                      x-on:click="open = !open"
-                      class="py-2 pl-2 pr-4 hover:bg-gray-300 rounded-md transition-colors duration-300"
-                    >
-                      <i data-lucide="trash-2" class="h-[18px] w-[18px]"></i>
-                    </button>
-
-                    <!-- Confirmación -->
-                    <div
-                      x-show="open"
-                      x-anchor.left-start="$refs.button"
-                      x-anchor.offset.10="$refs.button"
-                      x-transition
-                      class="flex flex-col space-y-2 shadow-lg bg-white text-gray-700 p-3 rounded-md border border-gray-200"
-                    >
-                      <h4 class="text-sm font-semibold">¿Está seguro?</h4>
-                      <div class="flex gap-2 text-sm">
-                        <button
-                          x-on:click="open = false"
-                          class="px-3 py-1 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700 transition"
-                        >
-                          Cancelar
-                        </button>
-                        <!-- button-delete -->
-                        <button
-                          class="px-3 py-1 rounded-md bg-red-200 hover:bg-red-300 active:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-400 text-red-700 transition"
-                        >
-                          Eliminar
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Contenido expandible -->
-                <div
-                  x-show="expanded"
-                  x-transition
-                  class="flex flex-col p-3 bg-gray-50 border border-gray-200 shadow-sm"
-                >
-                  <p
-                    x-text="task.description"
-                    class="text-gray-700 text-sm leading-relaxed"
-                  >
-                    Lorem ipsum dolor sit
-                  </p>
-
-                  <!-- Info -->
-                  <div
-                    class="flex items-start gap-2 p-2 mt-3 bg-white rounded-md border border-gray-200"
-                  >
-                    <i data-lucide="info" class="text-blue-500 mt-[2px]"></i>
-                    <div>
-                      <span
-                        x-text="task.created_at"
-                        class="text-xs text-gray-500 block"
-                        >2025-10-13T10:00:00Z</span
-                      >
-                      <div
-                        class="flex items-center space-x-2 mt-0.5 text-sm text-gray-700"
-                      >
-                        <span>Autor: <b>me</b></span>
-
-                        <!-- tag -->
-                        <span
-                          x-text="task.completed ? `Completado`: `Pendiente`"
-                          class="text-xs px-2 py-px rounded-lg"
-                          x-bind:class="task.completed ? `border-blue-500 text-blue-600 bg-blue-100` : `border-orange-500 text-orange-600 bg-orange-100`"
-                        >
-                          Completado
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- Footer -->
-                  <div class="flex justify-between items-center px-2 pt-3">
-                    <!-- Switch -->
-                    <label
-                      class="relative inline-flex items-center cursor-pointer select-none"
-                    >
-                      <input
-                        x-model="completed"
-                        type="checkbox"
-                        class="sr-only peer"
-                      />
-                      <div
-                        class="w-10 h-5 bg-gray-300 rounded-full peer-focus:ring-2 peer-focus:ring-blue-400 peer-checked:bg-blue-600 transition-colors duration-300 ease-in-out"
-                      ></div>
-                      <div
-                        class="absolute left-0.5 top-0.5 w-[16px] h-4 bg-white border border-gray-300 rounded-full transition-transform duration-300 ease-in-out peer-checked:translate-x-5"
-                      ></div>
-                    </label>
-                    <!-- button-actions -->
-                    <div class="flex gap-1 text-gray-600">
-                      <button
-                        class="hover:bg-red-300 hover:text-red-600 rounded-md p-2 transition-colors duration-300"
-                      >
-                        <i data-lucide="trash-2" class="h-[18px] w-[18px]"></i>
+                  <!-- Confirmación -->
+                  <div x-show="open" x-anchor.left-start="$refs.button" x-anchor.offset.10="$refs.button" x-transition
+                    class="flex flex-col space-y-2 shadow-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 p-3 rounded-md border border-gray-200 dark:border-gray-600">
+                    <h4 class="text-sm font-semibold">¿Está seguro?</h4>
+                    <div class="flex gap-2 text-sm">
+                      <button x-on:click="open = false"
+                        class="px-3 py-1 rounded-md bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 transition">
+                        Cancelar
                       </button>
+                      <!-- button-delete -->
                       <button
-                        class="hover:bg-blue-300 hover:text-blue-600 rounded-md p-2 transition-colors duration-300"
-                      >
-                        <i data-lucide="pencil" class="h-[18px] w-[18px]"></i>
+                        class="px-3 py-1 rounded-md bg-red-200 dark:bg-red-700 hover:bg-red-300 dark:hover:bg-red-600 active:bg-red-200 dark:active:bg-red-800 focus:outline-none focus:ring-1 focus:ring-red-400 text-red-700 dark:text-red-200 transition">
+                        Eliminar
                       </button>
                     </div>
                   </div>
                 </div>
               </div>
-              <!-- #endregion -->
-            </template>
-          </template>
 
-          <!-- overlay (invisible al inicio) -->
-          <div
-            x-show="showFormDrawer"
-            x-transition.opacity
-            x-on:click="handleCloseFormDrawer()"
-            class="absolute inset-0 bg-black/30 transition-opacity duration-300"
-          ></div>
+              <!-- Contenido expandible -->
+              <div x-show="expanded" x-transition
+                class="flex flex-col p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
+                <p x-text="task.description" class="text-gray-700 dark:text-gray-200 text-sm leading-relaxed">
+                  Lorem ipsum dolor sit
+                </p>
+
+                <!-- Info -->
+                <div
+                  class="flex items-start gap-2 p-2 mt-3 bg-white dark:bg-gray-700 rounded-md border border-gray-200 dark:border-gray-700">
+                  <i data-lucide="info" class="text-blue-500 dark:text-blue-400 mt-[2px]"></i>
+                  <div>
+                    <span x-text="task.created_at"
+                      class="text-xs text-gray-500 dark:text-gray-400 block">2025-10-13T10:00:00Z</span>
+                    <div class="flex items-center space-x-2 mt-0.5 text-sm text-gray-700 dark:text-gray-200">
+                      <span>Autor: <b>me</b></span>
+
+                      <!-- tag -->
+                      <span x-text="task.completed ? `Completado`: `Pendiente`" class="text-xs px-2 py-px rounded-lg"
+                        x-bind:class="task.completed ? `border-blue-500 text-blue-600 bg-blue-100 dark:bg-blue-800 dark:text-blue-200` : `border-orange-500 text-orange-600 bg-orange-100 dark:bg-orange-800 dark:text-orange-200`">
+                        Completado
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Footer -->
+                <div class="flex justify-between items-center px-2 pt-3">
+                  <!-- Switch -->
+                  <label class="relative inline-flex items-center cursor-pointer select-none">
+                    <input x-model="completed" type="checkbox" class="sr-only peer" />
+                    <div
+                      class="w-10 h-5 bg-gray-300 dark:bg-gray-600 rounded-full peer-focus:ring-2 peer-focus:ring-blue-400 peer-checked:bg-blue-600 transition-colors duration-300 ease-in-out">
+                    </div>
+                    <div
+                      class="absolute left-0.5 top-0.5 w-[16px] h-4 bg-white dark:bg-gray-200 border border-gray-300 dark:border-gray-500 rounded-full transition-transform duration-300 ease-in-out peer-checked:translate-x-5">
+                    </div>
+                  </label>
+
+                  <!-- button-actions -->
+                  <div class="flex gap-1 text-gray-600 dark:text-gray-300">
+                    <button
+                      class="hover:bg-red-300 dark:hover:bg-red-700 hover:text-red-600 dark:hover:text-red-200 rounded-md p-2 transition-colors duration-300">
+                      <i data-lucide="trash-2" class="h-[18px] w-[18px]"></i>
+                    </button>
+                    <button
+                      class="hover:bg-blue-300 dark:hover:bg-blue-700 hover:text-blue-600 dark:hover:text-blue-200 rounded-md p-2 transition-colors duration-300">
+                      <i data-lucide="pencil" class="h-[18px] w-[18px]"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- #endregion -->
+          </template>
+        </template>
+
+        <!-- overlay (invisible al inicio) -->
+        <div x-show="showFormDrawer" x-transition.opacity x-on:click="handleCloseFormDrawer()"
+          class="absolute inset-0 bg-black/30 transition-opacity duration-300"></div>
+      </div>
+
+      <div x-show="showFormDrawer" x-transition:enter="transition transform duration-300"
+        x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
+        x-transition:leave="transition transform duration-300" x-transition:leave-start="translate-y-0"
+        x-transition:leave-end="translate-y-full"
+        class="absolute bottom-0 bg-white dark:bg-gray-800 w-full px-5 pt-2 pb-4 rounded-t-md">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200">
+            New Task
+          </h3>
+
+          <!-- button-close-drawer -->
+          <button x-on:click="handleCloseFormDrawer()"
+            class="hover:bg-gray-300 dark:hover:bg-gray-600 active:bg-gray-200 dark:active:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-400 dark:focus:ring-gray-500 text-gray-700 dark:text-gray-200 p-2 rounded-lg text-sm items-center flex gap-1 transition-colors">
+            <i data-lucide="x" class="h-[18px] w-[18px]"></i>
+          </button>
         </div>
 
-        <div
-          x-show="showFormDrawer"
-          x-transition:enter="transition transform duration-300"
-          x-transition:enter-start="translate-y-full"
-          x-transition:enter-end="translate-y-0"
-          x-transition:leave="transition transform duration-300"
-          x-transition:leave-start="translate-y-0"
-          x-transition:leave-end="translate-y-full"
-          class="absolute bottom-0 bg-white w-full px-5 pt-2 pb-4 rounded-t-md"
-        >
-          <div class="flex justify-between items-center mb-3">
-            <h3 class="text-lg font-medium text-gray-800">New Task</h3>
+        <!-- form -->
+        <form x-on:submit.prevent="postSubmit()" class="space-y-3">
+          <input x-model="title" x-bind:disabled="postFormLoading" type="text" placeholder="Title..." required
+            class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          <textarea x-model="description" x-bind:disabled="postFormLoading" placeholder="Description..." rows="3"
+            class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
 
-            <!-- button-close-drawer -->
-            <button
-              x-on:click="handleCloseFormDrawer()"
-              class="hover:bg-gray-300 active:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-gray-400 text-gray-700 p-2 rounded-lg text-sm items-center flex gap-1 transition-colors"
-            >
-              <i data-lucide="x" class="h-[18px] w-[18px]"></i>
+          <div class="flex w-full items-center justify-between">
+            <!-- toggle -->
+            <label x-show="isUpdating" class="relative inline-flex items-center cursor-pointer select-none">
+              <input x-model="completed" x-bind:disabled="postFormLoading" type="checkbox" class="sr-only peer" />
+              <div
+                class="w-10 h-5 bg-gray-300 dark:bg-gray-600 rounded-full peer-focus:ring-2 peer-focus:ring-blue-400 peer-checked:bg-blue-600 transition-colors duration-300 ease-in-out">
+              </div>
+              <div
+                class="absolute left-0.5 top-0.5 w-[16px] h-4 bg-white dark:bg-gray-200 border border-gray-300 dark:border-gray-500 rounded-full transition-transform duration-300 ease-in-out peer-checked:translate-x-5">
+              </div>
+            </label>
+
+            <!-- button-save -->
+            <button x-bind:disabled="postFormLoading" type="submit"
+              class="bg-blue-200 dark:bg-blue-900 hover:bg-blue-300 dark:hover:bg-blue-800 active:bg-blue-200 dark:active:bg-blue-700 focus:outline-none focus:ring-1 focus:ring-blue-400 text-blue-700 dark:text-blue-200 flex flex-row px-3 py-1 rounded-lg text-sm items-center gap-1 transition-colors">
+              <template x-if="postFormLoading">
+                <span class="text-blue-700">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="15" height="15" fill="currentColor"
+                    aria-hidden="true">
+                    <rect x="1" y="6" width="2.8" height="12">
+                      <animate id="spinner_a" begin="0;spinner_e.end-0.1s" attributeName="y" dur="0.6s" values="6;1;6"
+                        calcMode="spline" keySplines=".36,.61,.3,.98;.36,.61,.3,.98" />
+                      <animate begin="0;spinner_e.end-0.1s" attributeName="height" dur="0.6s" values="12;22;12"
+                        calcMode="spline" keySplines=".36,.61,.3,.98;.36,.61,.3,.98" />
+                    </rect>
+                    <rect x="5.8" y="6" width="2.8" height="12">
+                      <animate begin="spinner_a.begin+0.1s" attributeName="y" dur="0.6s" values="6;1;6"
+                        calcMode="spline" keySplines=".36,.61,.3,.98;.36,.61,.3,.98" />
+                      <animate begin="spinner_a.begin+0.1s" attributeName="height" dur="0.6s" values="12;22;12"
+                        calcMode="spline" keySplines=".36,.61,.3,.98;.36,.61,.3,.98" />
+                    </rect>
+                    <rect x="10.6" y="6" width="2.8" height="12">
+                      <animate begin="spinner_a.begin+0.2s" attributeName="y" dur="0.6s" values="6;1;6"
+                        calcMode="spline" keySplines=".36,.61,.3,.98;.36,.61,.3,.98" />
+                      <animate begin="spinner_a.begin+0.2s" attributeName="height" dur="0.6s" values="12;22;12"
+                        calcMode="spline" keySplines=".36,.61,.3,.98;.36,.61,.3,.98" />
+                    </rect>
+                    <rect x="15.4" y="6" width="2.8" height="12">
+                      <animate begin="spinner_a.begin+0.3s" attributeName="y" dur="0.6s" values="6;1;6"
+                        calcMode="spline" keySplines=".36,.61,.3,.98;.36,.61,.3,.98" />
+                      <animate begin="spinner_a.begin+0.3s" attributeName="height" dur="0.6s" values="12;22;12"
+                        calcMode="spline" keySplines=".36,.61,.3,.98;.36,.61,.3,.98" />
+                    </rect>
+                    <rect x="20.2" y="6" width="2.8" height="12">
+                      <animate id="spinner_e" begin="spinner_a.begin+0.4s" attributeName="y" dur="0.6s" values="6;1;6"
+                        calcMode="spline" keySplines=".36,.61,.3,.98;.36,.61,.3,.98" />
+                      <animate begin="spinner_a.begin+0.4s" attributeName="height" dur="0.6s" values="12;22;12"
+                        calcMode="spline" keySplines=".36,.61,.3,.98;.36,.61,.3,.98" />
+                    </rect>
+                  </svg>
+                </span>
+              </template>
+              <span x-text="postFormLoading ? `Loading...` : `Save`"></span>
             </button>
           </div>
-
-          <!-- form -->
-          <form x-on:submit.prevent="postSubmit()" class="space-y-3">
-            <input
-              x-model="title"
-              x-bind:disabled="postFormLoading"
-              type="text"
-              placeholder="Title..."
-              required
-              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
-            <textarea
-              x-model="description"
-              x-bind:disabled="postFormLoading"
-              placeholder="Description..."
-              rows="3"
-              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-            ></textarea>
-
-            <div class="flex w-full items-center justify-between">
-              <!-- toggle -->
-              <label
-                x-show="isUpdating"
-                class="relative inline-flex items-center cursor-pointer select-none"
-              >
-                <input
-                  x-model="completed"
-                  x-bind:disabled="postFormLoading"
-                  type="checkbox"
-                  class="sr-only peer"
-                />
-
-                <div
-                  class="w-10 h-5 bg-gray-300 rounded-full peer-focus:ring-2 peer-focus:ring-blue-400 peer-checked:bg-blue-600 transition-colors duration-300 ease-in-out"
-                ></div>
-
-                <div
-                  class="absolute left-0.5 top-0.5 w-[16px] h-4 bg-white border border-gray-300 rounded-full transition-transform duration-300 ease-in-out peer-checked:translate-x-5"
-                ></div>
-              </label>
-
-              <!-- button-save -->
-              <button
-                x-bind:disabled="postFormLoading"
-                type="submit"
-                class="bg-blue-200 hover:bg-blue-300 active:bg-blue-200 focus:outline-none focus:ring-1 focus:ring-blue-400 text-blue-700 flex flex-row px-3 py-1 rounded-lg text-sm items-center gap-1 transition-colors"
-              >
-                <template x-if="postFormLoading">
-                  <span class="text-blue-700">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="15"
-                      height="15"
-                      fill="currentColor"
-                      aria-hidden="true"
-                    >
-                      <rect x="1" y="6" width="2.8" height="12">
-                        <animate
-                          id="spinner_a"
-                          begin="0;spinner_e.end-0.1s"
-                          attributeName="y"
-                          dur="0.6s"
-                          values="6;1;6"
-                          calcMode="spline"
-                          keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                        />
-                        <animate
-                          begin="0;spinner_e.end-0.1s"
-                          attributeName="height"
-                          dur="0.6s"
-                          values="12;22;12"
-                          calcMode="spline"
-                          keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                        />
-                      </rect>
-                      <rect x="5.8" y="6" width="2.8" height="12">
-                        <animate
-                          begin="spinner_a.begin+0.1s"
-                          attributeName="y"
-                          dur="0.6s"
-                          values="6;1;6"
-                          calcMode="spline"
-                          keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                        />
-                        <animate
-                          begin="spinner_a.begin+0.1s"
-                          attributeName="height"
-                          dur="0.6s"
-                          values="12;22;12"
-                          calcMode="spline"
-                          keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                        />
-                      </rect>
-                      <rect x="10.6" y="6" width="2.8" height="12">
-                        <animate
-                          begin="spinner_a.begin+0.2s"
-                          attributeName="y"
-                          dur="0.6s"
-                          values="6;1;6"
-                          calcMode="spline"
-                          keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                        />
-                        <animate
-                          begin="spinner_a.begin+0.2s"
-                          attributeName="height"
-                          dur="0.6s"
-                          values="12;22;12"
-                          calcMode="spline"
-                          keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                        />
-                      </rect>
-                      <rect x="15.4" y="6" width="2.8" height="12">
-                        <animate
-                          begin="spinner_a.begin+0.3s"
-                          attributeName="y"
-                          dur="0.6s"
-                          values="6;1;6"
-                          calcMode="spline"
-                          keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                        />
-                        <animate
-                          begin="spinner_a.begin+0.3s"
-                          attributeName="height"
-                          dur="0.6s"
-                          values="12;22;12"
-                          calcMode="spline"
-                          keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                        />
-                      </rect>
-                      <rect x="20.2" y="6" width="2.8" height="12">
-                        <animate
-                          id="spinner_e"
-                          begin="spinner_a.begin+0.4s"
-                          attributeName="y"
-                          dur="0.6s"
-                          values="6;1;6"
-                          calcMode="spline"
-                          keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                        />
-                        <animate
-                          begin="spinner_a.begin+0.4s"
-                          attributeName="height"
-                          dur="0.6s"
-                          values="12;22;12"
-                          calcMode="spline"
-                          keySplines=".36,.61,.3,.98;.36,.61,.3,.98"
-                        />
-                      </rect>
-                    </svg>
-                  </span>
-                </template>
-
-                <span x-text="postFormLoading ? `Loading...` : `Save`">
-                  Save
-                </span>
-              </button>
-            </div>
-          </form>
-        </div>
+        </form>
       </div>
-    </aside>
+    </div>
+  </aside>
 
-    <!-- scripts  -->
-    <script>
-      lucide.createIcons();
-    </script>
-    <!-- #endregion -->
-  </body>
+  <!-- scripts  -->
+  <script>
+    lucide.createIcons();
+    function scrollNav() {
+      return {
+        active: "home",
+        navItems: [
+          { id: "home", label: "Home" },
+          { id: "dev", label: "Development" },
+          { id: "about", label: "About" },
+        ],
+        scrollTo(id) {
+          document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+          this.active = id;
+        },
+        checkActive() {
+          const container = this.$refs.container;
+          const scrollPos = container.scrollTop + container.clientHeight / 2;
+          this.navItems.forEach((item) => {
+            const section = document.getElementById(item.id);
+            const top = section.offsetTop;
+            const bottom = top + section.offsetHeight;
+            if (scrollPos >= top && scrollPos < bottom) {
+              this.active = item.id;
+            }
+          });
+        },
+      };
+    }
+  </script>
+  <!-- #endregion -->
+</body>
+
 </html>
