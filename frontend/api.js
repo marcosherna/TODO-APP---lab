@@ -35,5 +35,5 @@ async function updateTask(taskId, { title, description, completed }) {
 async function deleteTask(taskId) {
   const res = await fetch(`${API_URL}/${taskId}`, { method: "DELETE" });
   if (!res.ok) throw new Error("Error al eliminar la tarea");
-  return await res.json();
+  return
 }
