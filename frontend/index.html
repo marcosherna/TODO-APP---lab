@@ -210,14 +210,14 @@
   <main x-data="scrollNav()" class="flex w-full h-screen overflow-hidden bg-gray-200 dark:bg-gray-900">
     <!-- Barra lateral -->
     <ul
-      class="flex flex-col justify-center items-center relative bg-gray-200/60 dark:bg-gray-800/60 backdrop-blur-md shadow-inner w-[60px] py-6 space-y-6 rounded-2xl">
+      class="flex flex-col justify-center items-center relative bg-gray-200/60 dark:bg-gray-800/60 backdrop-blur-md shadow-inner w-[60px] space-y-3 rounded-2xl">
       <template x-for="(item, index) in navItems" :key="index">
         <li
-          class="flex items-center justify-center h-[60px] px-4 py-2 transform rotate-90 origin-center text-sm font-semibold cursor-pointer relative transition-all duration-300 ease-in-out hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white/40 dark:hover:bg-white/10 hover:backdrop-blur-lg hover:shadow-[0_0_10px_rgba(59,130,246,0.3)] rounded-xl"
+          class="flex items-center justify-center h-[60px] w-[60px] cursor-pointer relative transition-all duration-300 ease-in-out hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white/40 dark:hover:bg-white/10 hover:backdrop-blur-lg hover:shadow-[0_0_10px_rgba(59,130,246,0.3)] rounded-xl"
           :class="active === item.id 
-          ? 'text-white font-bold bg-blue-600/70 dark:bg-blue-500/40 backdrop-blur-md shadow-[0_0_10px_rgba(59,130,246,0.5)] rounded-xl' 
-          : 'text-gray-800 dark:text-gray-200'" x-on:click="scrollTo(item.id)">
-          <span x-text="item.label"></span>
+        ? 'text-white font-bold bg-blue-600/70 dark:bg-blue-500/40 backdrop-blur-md shadow-[0_0_10px_rgba(59,130,246,0.5)] rounded-xl' 
+        : 'text-gray-800 dark:text-gray-200'" x-on:click="scrollTo(item.id)">
+          <i :data-lucide="item.icon" class="w-6 h-6"></i>
         </li>
       </template>
     </ul>
@@ -414,7 +414,7 @@
       <div class="flex items-end justify-between px-5 mt-5 mb-2">
         <span>
           <h2 class="font-medium text-xl text-gray-800 dark:text-gray-200">
-            Today's Task
+            Mis Tareas
           </h2>
           <span x-data="{ date: new Date().toString() }" x-text="formatDate(date)"
             class="text-sm text-gray-500 dark:text-gray-400">Wednesday, 11 may</span>
@@ -422,7 +422,7 @@
         <button x-on:click="handleOpenFormDrawer()"
           class="bg-blue-200 hover:bg-blue-300 active:bg-blue-200 focus:outline-none focus:ring-1 focus:ring-blue-400 text-blue-700 dark:text-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 px-3 py-1 rounded-lg text-sm items-center flex gap-1 transition-colors">
           <span>+</span>
-          <span>New task</span>
+          <span>Nuevo</span>
         </button>
       </div>
 
@@ -470,20 +470,19 @@
       <!-- empty state template -->
       <template x-if="!loading && isEmpty">
         <div class="flex flex-col w-full max-w-sm px-4 mx-auto mt-7">
+          <!-- ícono -->
           <div class="p-3 mx-auto text-blue-500 bg-blue-100 dark:bg-blue-700 dark:text-blue-200 rounded-full">
-            <!-- TODO: change icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-              stroke="currentColor" class="w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-            </svg>
+            <i data-lucide="clipboard" class="w-6 h-6"></i>
           </div>
-          <h1 class="text-center text-lg text-gray-700 dark:text-gray-200">
-            You don't have Task
+
+          <!-- título -->
+          <h1 class="text-center text-lg text-gray-700 dark:text-gray-200 mt-4">
+            No tienes tareas
           </h1>
+
+          <!-- descripción -->
           <p class="text-center mt-2 text-gray-500 dark:text-gray-400">
-            Your search “Stripe” did not match any vendors. Please try again
-            or create add a new vendor.
+            Intenta nuevamente o crea una nueva tarea.
           </p>
         </div>
       </template>
@@ -618,7 +617,7 @@
         class="absolute bottom-0 bg-white dark:bg-gray-800 w-full px-5 pt-2 pb-4 rounded-t-md">
         <div class="flex justify-between items-center mb-3">
           <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200">
-            New Task
+            Nueva Tarea
           </h3>
 
           <!-- button-close-drawer -->
@@ -687,7 +686,7 @@
                   </svg>
                 </span>
               </template>
-              <span x-text="postFormLoading ? `Loading...` : `Save`"></span>
+              <span x-text="postFormLoading ? `Cargando...` : `Guardar`"></span>
             </button>
           </div>
         </form>
@@ -702,15 +701,15 @@
       return {
         active: "home",
         navItems: [
-          { id: "home", label: "Home" },
-          { id: "dev", label: "Development" },
-          { id: "about", label: "About" },
+          { id: 'home', icon: 'home' },
+          { id: 'dev', icon: 'code' },
+          { id: 'about', icon: 'info' },
         ],
-        scrollTo(id) {
+        async scrollTo(id) {
           document.getElementById(id).scrollIntoView({ behavior: "smooth" });
           this.active = id;
         },
-        checkActive() {
+        async checkActive() {
           const container = this.$refs.container;
           const scrollPos = container.scrollTop + container.clientHeight / 2;
           this.navItems.forEach((item) => {
@@ -721,6 +720,7 @@
               this.active = item.id;
             }
           });
+
         },
       };
     }
