@@ -32,6 +32,17 @@
       darkMode: "class",
     };
 
+    function formatDate(dateString) {
+      const date = new Date(dateString)
+      const formatted = date.toLocaleDateString("en-US", {
+        weekday: "long",
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      });
+      return formatted
+    }
+
 
     document.addEventListener("alpine:init", () => {
       Alpine.data("mainTask", () => ({
@@ -102,7 +113,7 @@
             }
             this.postFormLoading = false;
             this.handleCloseFormDrawer();
- 
+
             await this.$nextTick();
             lucide.createIcons();
 
@@ -405,7 +416,8 @@
           <h2 class="font-medium text-xl text-gray-800 dark:text-gray-200">
             Today's Task
           </h2>
-          <span class="text-sm text-gray-500 dark:text-gray-400">Wednesday, 11 may</span>
+          <span x-data="{ date: new Date().toString() }" x-text="formatDate(date)"
+            class="text-sm text-gray-500 dark:text-gray-400">Wednesday, 11 may</span>
         </span>
         <button x-on:click="handleOpenFormDrawer()"
           class="bg-blue-200 hover:bg-blue-300 active:bg-blue-200 focus:outline-none focus:ring-1 focus:ring-blue-400 text-blue-700 dark:text-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 px-3 py-1 rounded-lg text-sm items-center flex gap-1 transition-colors">
@@ -546,7 +558,7 @@
                   class="flex items-start gap-2 p-2 mt-3 bg-white dark:bg-gray-700 rounded-md border border-gray-200 dark:border-gray-700">
                   <i data-lucide="info" class="text-blue-500 dark:text-blue-400 mt-[2px]"></i>
                   <div>
-                    <span x-text="task.created_at"
+                    <span x-text="formatDate(task.created_at)"
                       class="text-xs text-gray-500 dark:text-gray-400 block">2025-10-13T10:00:00Z</span>
                     <div class="flex items-center space-x-2 mt-0.5 text-sm text-gray-700 dark:text-gray-200">
                       <span>Autor: <b>me</b></span>
