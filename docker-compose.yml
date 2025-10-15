@@ -29,7 +29,7 @@ services:
   migrator:
     build:
       context: ./backend
-      dockerfile: Dockerfile.migrator
+      dockerfile: Dockerfile.migrations
     restart: "no"
     depends_on:
       db_prod:
@@ -43,7 +43,7 @@ services:
   backend:
     build:
       context: ./backend
-      target: production
+      #target: production
     container_name: todo_backend_prod
     restart: always
     env_file:
