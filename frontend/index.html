@@ -65,7 +65,6 @@
             this.loading = true;
 
             const taskData = await getTasks();
-            console.log(taskData);
 
             this.tasks = taskData;
 
@@ -86,12 +85,10 @@
               const task = await updateTask(this.id, {
                 title: this.title,
                 description: this.description,
-                completed: this.completed,
               });
 
               this.tasks[indexTask] = task;
-              // await this.getAllTask()
-              lucide.createIcons();
+              // await this.getAllTask() 
             } else {
               const task = await createTask({
                 title: this.title,
@@ -99,16 +96,21 @@
               });
 
               this.tasks.push(task);
-              lucide.createIcons();
+              if (this.tasks.length > 0) {
+                this.isEmpty = false
+              }
             }
             this.postFormLoading = false;
             this.handleCloseFormDrawer();
+ 
+            await this.$nextTick();
+            lucide.createIcons();
+
             // await this.getAllTask();
           } catch (error) {
             console.log(error);
           } finally {
             this.postFormLoading = false;
-
           }
         },
 
@@ -127,11 +129,29 @@
             const tasks = this.tasks.filter(t => t.id !== taskId)
             await deleteTask(taskId)
             this.tasks = [...tasks]
+            if (this.tasks.length === 0) {
+              this.isEmpty = true
+            }
           } catch (error) {
             console.log(error)
           } finally {
           }
+        },
+
+
+        async handleToggleStatu(taskData) {
+          let result = taskData.completed
+          try {
+            const task = await updateTask(taskData.id, {
+              completed: !taskData.completed,
+            });
+            result = !taskData.completed
+          } catch (error) {
+            console.log(error)
+          }
+          return result
         }
+
       }));
     });
   </script>
@@ -460,7 +480,7 @@
       <div x-data="{
           async init(){
             await getAllTask();
-            await await this.$nextTick();
+            await this.$nextTick();
             lucide.createIcons();
           }
         }" x-init="init()" class="h-full p-5 pr-2 overflow-auto">
@@ -532,8 +552,8 @@
                       <span>Autor: <b>me</b></span>
 
                       <!-- tag -->
-                      <span x-text="task.completed ? `Completado`: `Pendiente`" class="text-xs px-2 py-px rounded-lg"
-                        x-bind:class="task.completed ? `border-blue-500 text-blue-600 bg-blue-100 dark:bg-blue-800 dark:text-blue-200` : `border-orange-500 text-orange-600 bg-orange-100 dark:bg-orange-800 dark:text-orange-200`">
+                      <span x-text="completed ? `Completado`: `Pendiente`" class="text-xs px-2 py-px rounded-lg"
+                        x-bind:class="completed ? `border-blue-500 text-blue-600 bg-blue-100 dark:bg-blue-800 dark:text-blue-200` : `border-orange-500 text-orange-600 bg-orange-100 dark:bg-orange-800 dark:text-orange-200`">
                         Completado
                       </span>
                     </div>
@@ -542,8 +562,12 @@
                 <!-- Footer -->
                 <div class="flex justify-between items-center px-2 pt-3">
                   <!-- Switch -->
-                  <label class="relative inline-flex items-center cursor-pointer select-none">
-                    <input x-model="completed" type="checkbox" class="sr-only peer" />
+                  <label x-data="{
+                    async fnToggleStatus(){
+                       await handleToggleStatu(task) 
+                    }
+                  }" class="relative inline-flex items-center cursor-pointer select-none">
+                    <input x-on:change="fnToggleStatus()" x-model="completed" type="checkbox" class="sr-only peer" />
                     <div
                       class="w-10 h-5 bg-gray-300 dark:bg-gray-600 rounded-full peer-focus:ring-2 peer-focus:ring-blue-400 peer-checked:bg-blue-600 transition-colors duration-300 ease-in-out">
                     </div>
@@ -601,7 +625,7 @@
 
           <div class="flex w-full items-center justify-between">
             <!-- toggle -->
-            <label x-show="isUpdating" class="relative inline-flex items-center cursor-pointer select-none">
+            <!-- <label x-show="isUpdating" class="relative inline-flex items-center cursor-pointer select-none">
               <input x-model="completed" x-bind:disabled="postFormLoading" type="checkbox" class="sr-only peer" />
               <div
                 class="w-10 h-5 bg-gray-300 dark:bg-gray-600 rounded-full peer-focus:ring-2 peer-focus:ring-blue-400 peer-checked:bg-blue-600 transition-colors duration-300 ease-in-out">
@@ -609,7 +633,7 @@
               <div
                 class="absolute left-0.5 top-0.5 w-[16px] h-4 bg-white dark:bg-gray-200 border border-gray-300 dark:border-gray-500 rounded-full transition-transform duration-300 ease-in-out peer-checked:translate-x-5">
               </div>
-            </label>
+            </label> -->
 
             <!-- button-save -->
             <button x-bind:disabled="postFormLoading" type="submit"
