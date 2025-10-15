@@ -7,4 +7,5 @@ RUN npm install
 
 COPY . .
 
-CMD ["sh", "-c", "npx sequelize-cli db:create || true && npx sequelize-cli db:migrate"]
+CMD ["sh", "-c", "npx sequelize-cli db:create --config src/utils/database.js || true && npx sequelize-cli db:migrate --config src/utils/database.js --migrations-path src/database/migrations"]
+
