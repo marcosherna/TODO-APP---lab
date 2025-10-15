@@ -35,7 +35,7 @@ services:
       db_prod:
         condition: service_healthy
     env_file:
-      - ./backend/.env
+      - ./backend/.env.migrations
 
   # ------------------------------
   # Backend Node/Express
