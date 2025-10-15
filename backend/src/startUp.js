@@ -1,6 +1,4 @@
-if (process.env.NODE_ENV === "development") {
-  require("dotenv").config();
-}
+require("dotenv").config();
 
 const { Listen } = require("./server");
 const { sequelize } = require("./database/models");
