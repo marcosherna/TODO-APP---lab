@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+  # ------------------------------
+  # Base de datos PostgreSQL
+  # ------------------------------
+  db_prod:
+    image: postgres:15-alpine
+    container_name: todo_db_prod
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: todo_app_prod
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_prod_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d todo_app_prod"]
+      interval: 10s        # cada cuánto ejecuta el test
+      timeout: 5s          # cuánto espera una respuesta
+      retries: 5           # cuántos intentos antes de marcar unhealthy
+      start_period: 10s    # tiempo de espera antes del primer test
+
+  # ------------------------------
+  # Backend Node/Express
+  # ------------------------------
+  backend:
+    build:
+      context: ./backend
+      target: production
+    container_name: todo_backend_prod
+    restart: always
+    env_file:
+      - ./backend/.env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db_prod
+
+  # ------------------------------
+  # Frontend SPA con Nginx
+  # ------------------------------
+  frontend:
+    build: ./frontend
+    container_name: todo_frontend_prod
+    restart: always
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+volumes:
+  db_prod_data:
