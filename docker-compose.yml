@@ -24,6 +24,20 @@ services:
       start_period: 10s    # tiempo de espera antes del primer test
 
   # ------------------------------
+  # Backend Migrations
+  # ------------------------------
+  migrator:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.migrator
+    restart: "no"
+    depends_on:
+      db_prod:
+        condition: service_healthy
+    env_file:
+      - ./backend/.env
+
+  # ------------------------------
   # Backend Node/Express
   # ------------------------------
   backend:
@@ -37,7 +51,8 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - db_prod
+      migrator:
+        condition: service_completed_successfully
 
   # ------------------------------
   # Frontend SPA con Nginx
